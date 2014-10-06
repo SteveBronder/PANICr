@@ -37,4 +37,9 @@ PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
 moment, and Model C performs the MP test while projecting on intercept and trend.
  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
 }
+\references{
+Bai, Jushan, and Serena Ng.
+"A PANIC Attack on Unit Roots and Cointegration."
+Econometrica 72.4 (2004): 1127-1177. Print.
+}
 

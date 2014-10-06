@@ -50,5 +50,9 @@ moment, and Model C performs the MP test while projecting on intercept and trend
 }
 \references{
 pa-pb The pooled tests on the idiosyncratic component
+
+Bai, Jushan, and Serena Ng.
+"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
+Econometric Theory 26.04 (2010): 1088-1114. Print.
 }
 

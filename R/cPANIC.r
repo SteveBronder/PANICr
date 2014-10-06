@@ -31,6 +31,10 @@
 #' pooled ADF test on the common components, the pooled demeaned ADF test on the
 #' Idiosyncratic component, and the pooled first differenced and demeand ADF test on the
 #' Idiosyncratic component.
+#' 
+#'@references Bai, Jushan, and Serena Ng. 
+#'"A PANIC Attack on Unit Roots and Cointegration."
+#' Econometrica 72.4 (2004): 1127-1177. Print.
 #'
 panic04 <- function(x, nfac, p, k1, jj){
 

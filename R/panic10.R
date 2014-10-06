@@ -45,6 +45,9 @@
 #'@return PMSB Unit root test tends to zero. The unit root hypothesis is rejected
 #' in favor of stationarity when the PMSB test goes below a critical value
 #'
+#'@references Bai, Jushan, and Serena Ng. 
+#'"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
+#' Econometric Theory 26.04 (2010): 1088-1114. Print.
 
 panic10lm <- function(x, nfac,p,k1,jj){
 
