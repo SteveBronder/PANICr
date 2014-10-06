@@ -47,9 +47,14 @@ PMSB Unit root test tends to zero. The unit root hypothesis is rejected
 in favor of stationarity when the PMSB test goes below a critical value.
 }
 \description{
-This function performs the ADF tests of PANIC (2010).
+This function performs the tests of PANIC (2010).
 One estimates the pooled autoregressive coefficient, and one uses a sample
 moment. The sample moments test is based off of the modified
 Sargan-Bhargava test (PMSB).
+}
+\references{
+Bai, Jushan, and Serena Ng.
+"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
+Econometric Theory 26.04 (2010): 1088-1114. Print.
 }
 
