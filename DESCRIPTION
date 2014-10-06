@@ -1,0 +1,22 @@
+Package: PANICr
+Title: The main purpose of this package is to perform the Panel Analysis of
+    Nonstationarity in Idiosyncratic and Common Components (PANIC) from Bai and
+    Ng (2004,2010)
+Description: This package contains a methedology that makes use of the factor
+    struture of large dimensional panels to understand the nature of
+    nonstationarity inherent in data. This is referred to as PANIC - Panel
+    Analysis of Nonstationarity in Idiosyncratic and Common Components. PANIC
+    (2004) includes valid pooling methods that allow panel tests to be
+    constructed. PANIC (2004) can detect whether the nonstationarity in a
+    series is pervasive, or variable specific, or both. PANIC (2010) includes
+    two new tests on the idiosyncratic component that estimates the pooled
+    autoregressive coefficient ans sample moment, respectively. The PANIC model
+    approximates the number of factors based on Bai and Ng (2002)
+Depends:
+    R(>= 2.10.0)
+Version: 0.0.0.2
+License: GPL-3
+LazyData: no
+Author: Steve Bronder <sbronder@stevebronder.com>
+Maintainer: Steve Bronder <sbronder@stevebronder.com>
+URL: stevebronder.com
