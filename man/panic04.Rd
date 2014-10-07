@@ -3,16 +3,13 @@
 \alias{panic04}
 \title{PANIC (2004) Non-Stationarity Tests on Common and Idiosyncratic Components}
 \usage{
-panic04(x, nfac, p, k1, jj)
+panic04(x, nfac, k1, jj)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}
 
 \item{nfac}{An integer specifying the maximum number of factors allowed
 while estimating the factor model.}
-
-\item{p}{A binary selection for 0 or 1. p is the order of the determinisitic
-function in the regression. 0 is for constant only and 1 is to include a trend.}
 
 \item{k1}{The maximum lag allowed in the ADF test.}
 

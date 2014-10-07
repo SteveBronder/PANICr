@@ -5,7 +5,7 @@
 #' moment, and Model C performs the MP test while projecting on intercept and trend.
 #'  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
 #'
-#'@usage panic04(x, nfac, p, k1, jj)
+#'@usage panic04(x, nfac, k1, jj)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -14,9 +14,6 @@
 #' while estimating the factor model.
 #'
 #'@param k1 The maximum lag allowed in the ADF test.
-#'
-#'@param p A binary selection for 0 or 1. p is the order of the determinisitic
-#' function in the regression. 0 is for constant only and 1 is to include a trend.
 #'
 #'@param jj an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
 #' IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
@@ -36,7 +33,7 @@
 #'"A PANIC Attack on Unit Roots and Cointegration."
 #' Econometrica 72.4 (2004): 1127-1177. Print.
 #'
-panic04 <- function(x, nfac, p, k1, jj){
+panic04 <- function(x, nfac, k1, jj){
 
 
     x<-as.matrix(x)
@@ -143,6 +140,15 @@ if (sum(sum(lamhat))==0){
 
   adf50 <- matrix(0, N, 1)
 
+    if (ic == 1){
+      p = 0
+    }
+    if (ic == 0){
+      p = -1
+    }
+    if (ic > 1){
+      p = 1
+    }
 
   adf10 <- adf04(x1, k1, p)
 
@@ -191,12 +197,14 @@ if (sum(sum(lamhat))==0){
                      "R2",
                      "sifF/sige")
 
-  adf.ind <- matrix(c( "Pooled Demeaned", adf10a, adf10b,
-                       "Pooled Common", adf20,"-",
-                       "Pooled Demeaned Idiosyncratic", adf30a, adf30b,
-                       "Pooled Cointegration test", adf50a, adf50b),4,3,byrow=TRUE)
+  Common <- matrix(adf20)
+  colnames(Common)<- c("Common Test")
 
-results<- list(adff = adfr,pooladf=adf.ind)
+  adf.ind <- matrix(c( "Pooled Demeaned", adf10a, adf10b,
+                       "Pooled Idiosyncratic", adf30a, adf30b,
+                       "Pooled Cointegration test", adf50a, adf50b),3,3,byrow=TRUE)
+  colnames(adf.ind)<- c("Test", "Values", "")
+results<- list(adff = adfr,pooladf=adf.ind, Common = Common)
 
 return(results)
 

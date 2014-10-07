@@ -5,7 +5,7 @@
 #' moment. The sample moments test is based off of the modified
 #' Sargan-Bhargava test (PMSB).
 #'
-#'@usage panic10(x, nfac, p, k1, jj, demean)
+#'@usage panic10(x, nfac, k1, jj, demean)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -14,9 +14,6 @@
 #' while estimating the factor model.
 #'
 #'@param k1 The maximum lag allowed in the ADF test.
-#'
-#'@param p A binary selection for 0 or 1. p is the order of the determinisitic
-#' function in the regression. 0 is for constant only and 1 is to include a trend.
 #'
 #'@param jj an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
 #' IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
@@ -53,7 +50,7 @@
 #'"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
 #' Econometric Theory 26.04 (2010): 1088-1114. Print.
 
-panic10<- function(x, nfac, p, k1, jj, demean){
+panic10<- function(x, nfac, k1, jj, demean){
 
   if (demean == FALSE){
      x  <- as.matrix(x)

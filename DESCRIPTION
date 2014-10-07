@@ -19,3 +19,6 @@ LazyData: no
 Author: Steve Bronder <sbronder@stevebronder.com>
 Maintainer: Steve Bronder <sbronder@stevebronder.com>
 URL: stevebronder.com
+Suggests:
+    knitr
+VignetteBuilder: knitr
