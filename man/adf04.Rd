@@ -9,7 +9,7 @@ adf04(y,k,p)
 \item{y}{NxT matrix of data.}
 
 \item{k}{An integer specifying the maximum lag order for individual
-ADF regressions. Bai and Ng (2004) suggest 4*(Time)^(.25) rounded
+ADF regressions. Bai and Ng (2004) suggest 4*(Time/100)^(.25) rounded
 to the nearest whole number as the maximum number of lags.}
 
 \item{p}{A binary selection for 0 or 1. p is the order of the determinisitic
