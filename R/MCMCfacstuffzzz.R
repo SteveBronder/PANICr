@@ -1,11 +1,13 @@
 #'@title PANIC (2004) MCMC Non-Stationarity Tests on Common and Idiosyncratic Components
 #'
-#'@description This function performs PANIC (2010) Model C, PAC, and PMSB tests.
-#' PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
+#'@description This function performs an MCMC over PANIC (2010) Model C, PAC, and
+#' PMSB tests. PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
 #' moment, and Model C performs the MP test while projecting on intercept and trend.
 #'  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
 #'
-#'@usage panic04(x, nfac, k1, jj)
+#'@usage MCMCpanic04(x, nfac, k1, jjburn = 1000, mcmc = 10000, thin = 10, verbose = 0,
+#'seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
+#'a0 = 0.001, b0 = 0.001, std.var = TRUE)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -20,14 +22,17 @@
 #' makes the number of factors equal to the number of columns whose sum of
 #' eigenvalues is less than  or equal to .5.
 #'
-#'@return adff A data frame containing ADF p value, Demeaned Error term p value,Demeaned
-#'  and detrended p value,R squared for principle component
-#'  , And the significance of the Error components.
+#'@return Demeaned Errora
 #'
-#'@return adf.ind A matrix containing the pooled Demeaned ADF test on the data, the
-#' pooled ADF test on the common components, the pooled demeaned ADF test on the
-#' Idiosyncratic component, and the pooled first differenced and demeand ADF test on the
-#' Idiosyncratic component.
+#'@return Demeanded Errorb
+#'
+#'@return NonDemeaned Errora
+#'
+#'@return NonDemeanded Errorb
+#'
+#'@return Common Test
+#'
+#'@return factor_mcmc The MCMC results from MCMCfactanal()
 #' 
 #'@references Bai, Jushan, and Serena Ng. 
 #'"A PANIC Attack on Unit Roots and Cointegration."
@@ -190,6 +195,6 @@ adf20ab<- matrix(unlist(adf20), mcmc, ic, byrow=TRUE)
 
 adf.tests <- cbind(adf50a,adf50b,adf30a,adf30b,adf20ab)
 
-colnames(c("Demeaned Error", ))
-results<- list(adf.mcmc = adf.tests)
+colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
+results<- list(adf.mcmc = adf.tests, factor_MCMC = fac.test)
 }
