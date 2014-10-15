@@ -61,11 +61,13 @@ MCMCpanic10<- function(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin 
 if (demean == FALSE){
   x  <- as.matrix(x)
   
-  Tn <- dim(x)[1]
-  
-  N  <- dim(x)[2]
+
   
   dx <- trimr(mydiff(x, 1), 1, 0)
+  
+  Tn <- dim(dx)[1]
+  
+  N  <- dim(dx)[2]
   
   scale <- sqrt(N) * Tn
   
@@ -201,9 +203,9 @@ if (demean == FALSE){
   SIG2 <- NULL
   HALF <- NULL
   
-  one     <- matrix(1, I(Tn-2), 1)
+  one     <- matrix(1, I(Tn-1), 1)
   
-  Q_T     <- diag(I(Tn - 2)) - one %*% solve(crossprod(one)) %*% t(one)
+  Q_T     <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
   
   for (i in 1:I(mcmc/thin)){
   
@@ -411,9 +413,9 @@ if (demean == FALSE){
   SIG2 <- NULL
   HALF <- NULL
   
-  one     <-  cbind(matrix(1,I(Tn-2),1),as.matrix(seq(1,I(Tn-2))))
+  one     <-  cbind(matrix(1,I(Tn-1),1),as.matrix(seq(1,I(Tn-1))))
   
-  Q_T     <- diag(I(Tn-2)) - one %*% solve(crossprod(one)) %*% t(one)
+  Q_T     <- diag(I(Tn-1)) - one %*% solve(crossprod(one)) %*% t(one)
   
   
   for (i in 1:I(mcmc/thin)){

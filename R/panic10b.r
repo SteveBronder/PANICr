@@ -55,11 +55,13 @@ panic10<- function(x, nfac, k1, jj, demean){
   if (demean == FALSE){
      x  <- as.matrix(x)
 
-     Tn <- dim(x)[1]
 
-     N  <- dim(x)[2]
 
      dx <- trimr(mydiff(x, 1), 1, 0)
+     
+     Tn <- dim(dx)[1]
+     
+     N  <- dim(dx)[2]
 
   scale <- sqrt(N) * Tn
 
@@ -147,9 +149,9 @@ lagehat0 <- trimr(lagn(ehat0, 1), 1, 0)
 # tests that project on constant
 
 
-  one     <- matrix(1, I(Tn-2), 1)
+  one     <- matrix(1, I(Tn-1), 1)
 
-  Q_T     <- diag(I(Tn - 2)) - one %*% solve(crossprod(one)) %*% t(one)
+  Q_T     <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
 
   ehat    <- Q_T %*% ehat0
 
@@ -221,9 +223,9 @@ return(output)
 
     dx <- dX - repmat
 
-    Tn <- dim(x)[1]
+    Tn <- dim(dx)[1]
 
-    N  <- dim(x)[2]
+    N  <- dim(dx)[2]
 
     scale <- sqrt(N) * Tn
 
@@ -310,9 +312,9 @@ return(output)
 
     # Tests that project on intercept and trends
 
-    one     <-  cbind(matrix(1,I(Tn-2),1),as.matrix(seq(1,I(Tn-2))))
+    one     <-  cbind(matrix(1,I(Tn-1),1),as.matrix(seq(1,I(Tn-1))))
 
-    Q_T     <- diag(I(Tn-2)) - one %*% solve(crossprod(one)) %*% t(one)
+    Q_T     <- diag(I(Tn-1)) - one %*% solve(crossprod(one)) %*% t(one)
 
     ehat    <- Q_T %*% ehat0
 

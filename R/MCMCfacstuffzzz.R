@@ -7,7 +7,7 @@
 #'
 #'@usage MCMCpanic04(x, nfac, k1, jjburn = 1000, mcmc = 10000, thin = 10, verbose = 0,
 #'seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
-#'a0 = 0.001, b0 = 0.001, std.var = TRUE)
+#'a0 = 0.001, b0 = 0.001, std.var = TRUE, fac.test=FALSE)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -40,7 +40,7 @@
 #'
 MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
                         seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
-                        a0 = 0.001, b0 = 0.001, std.var = TRUE){
+                        a0 = 0.001, b0 = 0.001, std.var = TRUE,fac.test=FALSE){
 x<-as.matrix(x)
 
 Tn <- dim(x)[1]
@@ -162,7 +162,7 @@ adf10b <- padf10$adf31b
 
 adf20 <- NULL
 for (j in 1:I(mcmc/thin)){
- adf20[[j]] <- matrix(0,1,2)
+ adf20[[j]] <- matrix(0,1,ic)
 
 for (i in 1:ic){
   
@@ -194,7 +194,11 @@ adf50b[[j]] <- padf50[[j]]$pvalb
 adf20ab<- matrix(unlist(adf20), mcmc, ic, byrow=TRUE)
 
 adf.tests <- cbind(adf50a,adf50b,adf30a,adf30b,adf20ab)
-
-colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
-results<- list(adf.mcmc = adf.tests, factor_MCMC = fac.test)
+  if (fac.test == TRUE){
+    colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
+    results<- list(adf.mcmc = adf.tests, factor_MCMC = fac.test)
+  }else{
+    colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
+    results<- list(adf.mcmc = adf.tests)
+  }
 }
