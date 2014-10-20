@@ -235,7 +235,7 @@ return(output)
 
     lamhat <- factors$lambda
 
-    dfhat <- factors$Fhat
+    dfhat <- as.matrix(factors$Fhat)
 
     fhat <- apply(dfhat, 2, cumsum)
 

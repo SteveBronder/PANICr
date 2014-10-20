@@ -3,7 +3,9 @@
 \alias{MCMCpanic04}
 \title{PANIC (2004) MCMC Non-Stationarity Tests on Common and Idiosyncratic Components}
 \usage{
-panic04(x, nfac, k1, jj)
+MCMCpanic04(x, nfac, k1, jjburn = 1000, mcmc = 10000, thin = 10, verbose = 0,
+seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
+a0 = 0.001, b0 = 0.001, std.var = TRUE, fac.test=FALSE)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}
@@ -17,20 +19,49 @@ while estimating the factor model.}
 IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
 makes the number of factors equal to the number of columns whose sum of
 eigenvalues is less than  or equal to .5.}
+
+\item{burn}{The number of burn in iterators for the sampler}
+
+\item{mcmc}{The number of iterations in the sampler}
+
+\item{thin}{The thinning interval used in the simulation. mcmc must be divisible by this value.}
+
+\item{verbose}{A positive integer which determines whether or not the progress of the
+sampler is printed to the screen. If verbose is greater than 0 the iteration
+number and the factor loadings and uniquenesses are printed to the screen
+every verboseth iteration.}
+
+\item{seed}{The seed for the random number generator.}
+
+\item{lambda.start}{Starting values for the factor loading matrix Lambda.}
+
+\item{psi.start}{Starting values for the uniqueness}
+
+\item{l0}{The means of the independent Normal prior on the factor loadings}
+
+\item{L0}{A scalar or a matrix with the same dimensions as lambda. The precision (inverse variances)
+of the independent Normal prior on the factor loadings.}
+
+\item{a0}{scalar or a k-vector. Controls the shape of the inverse Gamma prior on the uniqueness.}
+
+\item{b0}{Controls the scale of the inverse Gamma prior on the uniqueness.}
+
+\item{std.var}{if TRUE the variables are rescaled to have zero mean and unit variance.
+Otherwise, the variables are rescaled to have zero mean, but retain their observed variances}
 }
 \value{
-adff A data frame containing ADF p value, Demeaned Error term p value,Demeaned
- and detrended p value,R squared for principle component
- , And the significance of the Error components.
+adf.mcmc A list of the MCMC samples of the test statistics. Returns the test statistics
+ Pooled Cointegration a,  Pooled Cointegration b, Pooled Idiosyncratic a,
+ Pooled Idiosyncratic b, Pooled Demeaned test, and tests on Common components. The critical values for the Pooled Cointegration test
+ can be found on this packages vignette or in Bai and Ng (2004). The pooled idiosyncratic test has a critical
+ value of 1.64. The Pooled Demeaned test has a critical value of 2.87. The common components have a critical
+ value of -2.86.
 
-adf.ind A matrix containing the pooled Demeaned ADF test on the data, the
-pooled ADF test on the common components, the pooled demeaned ADF test on the
-Idiosyncratic component, and the pooled first differenced and demeand ADF test on the
-Idiosyncratic component.
+factor_mcmc The MCMC results from MCMCfactanal()
 }
 \description{
-This function performs PANIC (2010) Model C, PAC, and PMSB tests.
-PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
+This function performs an MCMC over PANIC (2010) Model C, PAC, and
+PMSB tests. PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
 moment, and Model C performs the MP test while projecting on intercept and trend.
  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
 }
@@ -38,5 +69,8 @@ moment, and Model C performs the MP test while projecting on intercept and trend
 Bai, Jushan, and Serena Ng.
 "A PANIC Attack on Unit Roots and Cointegration."
 Econometrica 72.4 (2004): 1127-1177. Print.
+
+ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 }
 

@@ -3,11 +3,12 @@
 #'@description This function performs the tests of PANIC (2010) with a Monte Carlo
 #' Markov chain based on a gibbs sampler. One test estimates the pooled autoregressive
 #'  coefficient, and one uses a sample moment. The sample moments test is based off of the modified
-#' Sargan-Bhargava test (PMSB).
+#' Sargan-Bhargava test (PMSB) while the pooled autoregressive component is based on the
+#' Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2004).
 #'
 #'@usage panic10(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin = 10,
 #' verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-#'   a0 = 0.001, b0 = 0.001, std.var = TRUE)
+#'   a0 = 0.001, b0 = 0.001, std.var = FALSE)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -25,35 +26,50 @@
 #'@param demean logical argument. If TRUE, function performs tests on demeaned
 #' data. If FALSE, uses non-demeanded data generating process.
 #'
-#'@return rho1 Estimation of the Pooled Autoregressive Coefficient.
+#'@param burn The number of burn in iterators for the sampler
 #'
-#'@return Model This function shows MP models A, B, and C. A assumes no deterministic component.
-#' B assumes a constant and allows for a fixed effect model. C allows a constant
-#' and trend.
+#'@param mcmc The number of iterations in the sampler
 #'
-#'@return test.A.B A matrix containing t_a, t_b, t_a1, and t_a2.
+#'@param thin The thinning interval used in the simulation. mcmc must be divisible by this value.
 #'
-#'@return test.C.P A matrix containing the Pooled tests as well as Model C.
+#'@param verbose A positive integer which determines whether or not the progress of the
+#' sampler is printed to the screen. If verbose is greater than 0 the iteration 
+#' number and the factor loadings and uniquenesses are printed to the screen 
+#' every verboseth iteration.
 #'
-#'@return extra.test a matrix containing t_c, rho1, adf30b.
-#' Or a matrix containing t_c, rho1, and the LM test for PANIC (2004)'s
-#' Idiosyncratic Components.
+#'@param seed The seed for the random number generator.
 #'
+#'@param lambda.start Starting values for the factor loading matrix Lambda.
 #'
-#'@return pa-pb Pooled test from PANIC (2010). Null of nonstationarity.
-#' If both reject conclude stationarity. However, if only one rejects the panel
-#' is nonstationary.
+#'@param psi.start Starting values for the uniqueness
 #'
+#'@param l0 The means of the independent Normal prior on the factor loadings
 #'
-#'@return PMSB Unit root test tends to zero. The unit root hypothesis is rejected
-#'in favor of stationarity when the PMSB test goes below a critical value.
+#'@param L0 A scalar or a matrix with the same dimensions as lambda. The precision (inverse variances)
+#' of the independent Normal prior on the factor loadings.
+#' 
+#'@param a0 scalar or a k-vector. Controls the shape of the inverse Gamma prior on the uniqueness.
+#'
+#'@param b0 Controls the scale of the inverse Gamma prior on the uniqueness.
+#'
+#'@param std.var if TRUE the variables are rescaled to have zero mean and unit variance.
+#' Otherwise, the variables are rescaled to have zero mean, but retain their observed variances
+#' 
+#'@return adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
+#' will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B, 
+#' PMSB, and rho. Pa, Pb, and the MP tests have a critical value of 1.96. PMSB is a degenerating critical value.
+#' The critical values can be found in this packages vignette or from Stock (1990). 
 #'
 #'@references Bai, Jushan, and Serena Ng.
 #'"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
 #' Econometric Theory 26.04 (2010): 1088-1114. Print.
+#' 
+#'@references ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+#' in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
+#'
 
 
-MCMCpanic10<- function(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
+MCMCpanic10<- function(x, nfac, k1, jj, demean=FALSE, burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
                    seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
                    a0 = 0.001, b0 = 0.001, std.var = TRUE){
   
@@ -89,11 +105,10 @@ if (demean == FALSE){
     
     
     
-    dfhat[[i]] <- matrix(fac.test[i,I(N*ic+N + 1):I((Tn-1)* ic + N*ic + N)],I(Tn-1),ic,byrow=TRUE)
+    dfhat[[i]] <- matrix(fac.test[i,I(N*ic+N + 1):I((Tn)* ic + N*ic + N)],I(Tn),ic,byrow=TRUE)
     
-    
-    dehat[[i]] <- dx- tcrossprod(dfhat[[i]],lamhat[[i]])
   }
+  
   
   lagehat0 <- NULL
   ehat1 <- NULL
@@ -101,21 +116,11 @@ if (demean == FALSE){
   fhat <- NULL
   ehat0a <- NULL
   ehat0 <- NULL
-  for (j in 1:I(mcmc/thin)){
-    ehat0a[[j]] <- apply(dehat[[j]],2,cumsum)
-    
-    fhat[[j]] <- apply(dfhat[[j]],2,cumsum)
-  
-  
-  
-  
-  lagehat0[[j]] <- trimr(lagn(ehat0a[[j]], 1), 1, 0)
-  
-  ehat0[[j]]  <- trimr(ehat0a[[j]], 1, 0)
-  
-  }
+
   #Model A
   #compute rho0 (no demeaning)
+  
+  
   top0 <- NULL
   bottom0 <- NULL
   rho0 <- NULL
@@ -131,15 +136,17 @@ if (demean == FALSE){
   HALF <- NULL
   
   for (i in 1:I(mcmc/thin)){
-  top0[[i]]     <- sum(sum(lagehat0[[i]] * ehat0[[i]]))
+  top0[[i]]     <- sum(sum(trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)))
   
-  bottom0[[i]]  <- sum(sum(lagehat0[[i]] * lagehat0[[i]]))
+  bottom0[[i]]  <- sum(sum(trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)))
   
   rho0[[i]]     <- top0[[i]]/bottom0[[i]]
   
-  res0[[i]]    <- ehat0[[i]] - lagehat0[[i]] * rho0[[i]]
+  res0[[i]]    <-  trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0) - trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * rho0[[i]]
   
   Nuisance[[i]] <- nuisance(res0[[i]], 0)
+  
+
   
   sig2[[i]]     <- Nuisance[[i]]$sig2
   
@@ -166,11 +173,13 @@ if (demean == FALSE){
   
   V1  <- (1/3)
   
+  res0 <- NULL
   ADJ <- NULL
   rho1 <- NULL
   t_a <- NULL
   t_b <- NULL
   t_c <- NULL
+  ehat <- NULL
   
   for (i in 1:I(mcmc/thin)){
   ADJ[[i]] <- N * Tn * HALF[[i]]
@@ -181,14 +190,14 @@ if (demean == FALSE){
   
   t_b[[i]] <- scale * (rho1[[i]] - 1) * sqrt( bottom0[[i]] / (scale^2)) * sqrt(B1 * OMEGA2[[i]] / PHI4[[i]])
   # P = 0 , -1 PMSB test
-  t_c[[i]] <- sqrt(N) * (sum(diag(ehat0[[i]] %*% t(ehat0[[i]]))) / (N * Tn^2) - U1 * OMEGA2[[i]]) / sqrt(V1 * PHI4[[i]])
+  t_c[[i]] <- sqrt(N) * (sum(diag( trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0) %*% t( trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)))) / (N * Tn^2) - U1 * OMEGA2[[i]]) / sqrt(V1 * PHI4[[i]])
   }
   #Model B
   # tests that project on constant
   
   one <- NULL
   Q_T <- NULL
-  ehat <- NULL
+  
   lagehat <- NULL
   top <- NULL
   bottom <- NULL
@@ -210,17 +219,16 @@ if (demean == FALSE){
   for (i in 1:I(mcmc/thin)){
   
   
-  ehat[[i]]    <- Q_T %*% ehat0[[i]]
   
-  lagehat[[i]] <- Q_T %*% lagehat0[[i]]
+  lagehat[[i]] <- Q_T %*% trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)
   
-  top[[i]]     <- sum(sum(lagehat[[i]] * ehat[[i]]))
+  top[[i]]     <- sum(sum(trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * (Q_T %*%  trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0))))
   
-  bottom[[i]]  <- sum(sum(lagehat[[i]] * lagehat[[i]]))
+  bottom[[i]]  <- sum(sum(trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * trimr(lagn(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)))
   
   rho1[[i]]    <- top[[i]] / bottom[[i]]
   
-  res1[[i]]    <- ehat[[i]] - lagehat[[i]] * rho1[[i]]
+  res1[[i]]    <- (Q_T %*%  trimr(apply( dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)) - lagehat[[i]] * rho1[[i]]
   
   Nuisance[[i]] <- nuisance(res1[[i]], 0)
   
@@ -243,10 +251,13 @@ if (demean == FALSE){
   
   B1     <- 2
   
+  res1<- NULL
   ADJ <- NULL
   rho1 <- NULL
   t_a1 <- NULL
   t_a2 <- NULL
+  lagehat <- NULL
+  lagehat0 <- NULL
   
   for (i in 1:I(mcmc/thin)){
   ADJ[[i]]    <- -N * Tn * SIG2[[i]] / 2
@@ -259,10 +270,15 @@ if (demean == FALSE){
   t_a2[[i]] <- scale * (rho1[[i]] - 1) * sqrt(bottom[[i]] / (scale^2)) * sqrt(B1 * OMEGA2[[i]] / PHI4[[i]])
   }
   
-  output <- cbind(t_a,t_a1,t_a2,t_b,t_c,rho1)
+
   
+  output <- cbind(t_a,t_b,t_a1,t_a2,t_c,rho1)
+  
+  colnames(output) <- c("model A ta","model A tb", "model B ta","model B tb", "PMSB","rho" )
  
   return(output)
+  #########################################################
+  #########################################################
 }else{
   
   
@@ -300,10 +316,7 @@ if (demean == FALSE){
     
     
     
-    dfhat[[i]] <- matrix(fac.test[i,I(N*ic+N + 1):I((Tn-1)* ic + N*ic + N)],I(Tn-1),ic,byrow=TRUE)
-    
-    
-    dehat[[i]] <- dx- tcrossprod(dfhat[[i]],lamhat[[i]])
+    dfhat[[i]] <- matrix(fac.test[i,I(N*ic+N + 1):I((Tn)* ic + N*ic + N)],I(Tn),ic,byrow=TRUE)
   }
   
   lagehat0 <- NULL
@@ -312,24 +325,19 @@ if (demean == FALSE){
   fhat <- NULL
   ehat0a <- NULL
   ehat0 <- NULL
-  for (j in 1:I(mcmc/thin)){
-    ehat0a[[j]] <- apply(dehat[[j]],2,cumsum)
+  for (i in 1:I(mcmc/thin)){
     
-    fhat[[j]] <- apply(dfhat[[j]],2,cumsum)
+    lagehat0[[i]] <- trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)
     
-    
-    
-    
-    lagehat0[[j]] <- trimr(lagn(ehat0a[[j]], 1), 1, 0)
-    
-    ehat0[[j]]  <- trimr(ehat0a[[j]], 1, 0)
+    ehat0[[i]]  <- trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)
     
   }
+  
   ###
+  
   
   one <- NULL
   Q_T <- NULL
-  ehat <- NULL
   lagehat <- NULL
   top <- NULL
   bottom <- NULL
@@ -346,13 +354,13 @@ if (demean == FALSE){
   #########
   
   for (i in 1:I(mcmc/thin)){
-  bottom0[[i]] <- sum(sum(lagehat0[[i]] * lagehat0[[i]]))
+  bottom0[[i]] <- sum(sum(trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)))
   
-  top0[[i]]    <- sum(sum(lagehat0[[i]] * ehat0[[i]]))
+  top0[[i]]    <- sum(sum(trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)))
   
   rho0[[i]]    <- top0[[i]] / bottom0[[i]]
   
-  res0[[i]]    <- ehat0[[i]] - lagehat0[[i]] * rho0[[i]]
+  res0[[i]]    <- trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0) - trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0) * rho0[[i]]
   
   Nuisance[[i]]<- nuisance(res0[[i]], 0)
   
@@ -393,7 +401,7 @@ if (demean == FALSE){
   
   t_b[[i]] <- scale * (rho0[[i]] - 1 + ADJ[[i]]*3/Tn) * sqrt(bottom0[[i]] / (scale^2)) * sqrt(B1 * (OMEGA2[[i]]^3) / (PHI4[[i]] * (SIG2[[i]]^2)))
   # P = 1 PMSB
-  t_c[[i]] <- sqrt(N)*(sum(diag(ehat0[[i]] %*% t(ehat0[[i]]))) / (N*Tn^2) - U1 * OMEGA2[[i]]) / sqrt(V1 * PHI4[[i]])
+  t_c[[i]] <- sqrt(N)*(sum(diag(trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0) %*% t(trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)))) / (N*Tn^2) - U1 * OMEGA2[[i]]) / sqrt(V1 * PHI4[[i]])
   }
   # Tests that project on intercept and trends
   
@@ -413,15 +421,15 @@ if (demean == FALSE){
   SIG2 <- NULL
   HALF <- NULL
   
-  one     <-  cbind(matrix(1,I(Tn-1),1),as.matrix(seq(1,I(Tn-1))))
+  one     <-  cbind(matrix(1,I(Tn),1),as.matrix(seq(1,I(Tn))))
   
-  Q_T     <- diag(I(Tn-1)) - one %*% solve(crossprod(one)) %*% t(one)
+  Q_T     <- diag(I(Tn)) - one %*% solve(crossprod(one)) %*% t(one)
   
   
   for (i in 1:I(mcmc/thin)){
   ehat[[i]]    <- Q_T %*% ehat0[[i]]
   
-  lagehat[[i]] <- Q_T %*% lagehat0[[i]]
+  lagehat[[i]] <- Q_T %*% trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)
   
   top[[i]]     <- sum(sum(lagehat[[i]] * ehat[[i]]))
   
@@ -432,6 +440,8 @@ if (demean == FALSE){
   res1[[i]]    <- ehat[[i]] - lagehat[[i]] * rho1[[i]]
   
   Nuisance[[i]]<- nuisance(res1[[i]], 0)
+  
+  res1[[i]]    <- NULL
   
   sig2[[i]]    <- Nuisance[[i]]$sig2
   
@@ -468,10 +478,11 @@ if (demean == FALSE){
   }
   
 
-  adf.test <- cbind(t_a,t_b,t_a1,t_a2,t_c,rho1)
+  adf.mcmc <- cbind(t_a,t_b,t_a1,t_a2,t_c,rho1)
 
+  colnames(adf.mcmc) <- c("Pa","Pb","Model C ta","Model C tb","PMSB","rho1")
  
-  output <- list(adf.tests = adf.test  )
+  output <- list(adf.mcmc = adf.mcmc  )
   
   
   return(output)

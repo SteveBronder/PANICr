@@ -62,7 +62,7 @@ panic04 <- function(x, nfac, k1, jj){
 
     ic <- factors$ic
 
-    if (is.null(ic)){
+    if (ic==0){
       ic <- 1
     }
 

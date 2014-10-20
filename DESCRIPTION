@@ -22,3 +22,5 @@ URL: stevebronder.com
 Suggests:
     knitr
 VignetteBuilder: knitr
+Imports:
+    MCMCpack

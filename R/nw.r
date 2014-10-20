@@ -39,9 +39,9 @@ nw <- function(v, fixk){
 
 			         e <- v[2:Tn,i] - rho[i] * v[1:I(Tn - 1),i]
 
-			  sigma[i] <- crossprod(e) / (Tn-1)
+          sigma[i] <- crossprod(e) / (Tn-1)
 
-top <- top + 4 * (rho[i]^2) * (sigma[i]^2) / (((1 - rho[i])^6) * (1 + rho[i])^2)
+           top <- top + 4 * (rho[i]^2) * (sigma[i]^2) / (((1 - rho[i])^6) * (1 + rho[i])^2)
 
 			     bot <- bot + (sigma[i]^2) / ((1 - rho[i])^4)
       }
@@ -62,7 +62,11 @@ top <- top + 4 * (rho[i]^2) * (sigma[i]^2) / (((1 - rho[i])^6) * (1 + rho[i])^2)
 
 	    w[i] <- 1 - i / (k + 1)
 	  }
-
+  
+  #Trying Something
+   if (k > Tn){
+      k = Tn/2
+    }
 	output <- list( k = k , w = w)
 	return(output)
 }

@@ -5,7 +5,7 @@
 \usage{
 panic10(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin = 10,
 verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-  a0 = 0.001, b0 = 0.001, std.var = TRUE)
+  a0 = 0.001, b0 = 0.001, std.var = FALSE)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}
@@ -22,38 +22,55 @@ eigenvalues is less than  or equal to .5.}
 
 \item{demean}{logical argument. If TRUE, function performs tests on demeaned
 data. If FALSE, uses non-demeanded data generating process.}
+
+\item{burn}{The number of burn in iterators for the sampler}
+
+\item{mcmc}{The number of iterations in the sampler}
+
+\item{thin}{The thinning interval used in the simulation. mcmc must be divisible by this value.}
+
+\item{verbose}{A positive integer which determines whether or not the progress of the
+sampler is printed to the screen. If verbose is greater than 0 the iteration
+number and the factor loadings and uniquenesses are printed to the screen
+every verboseth iteration.}
+
+\item{seed}{The seed for the random number generator.}
+
+\item{lambda.start}{Starting values for the factor loading matrix Lambda.}
+
+\item{psi.start}{Starting values for the uniqueness}
+
+\item{l0}{The means of the independent Normal prior on the factor loadings}
+
+\item{L0}{A scalar or a matrix with the same dimensions as lambda. The precision (inverse variances)
+of the independent Normal prior on the factor loadings.}
+
+\item{a0}{scalar or a k-vector. Controls the shape of the inverse Gamma prior on the uniqueness.}
+
+\item{b0}{Controls the scale of the inverse Gamma prior on the uniqueness.}
+
+\item{std.var}{if TRUE the variables are rescaled to have zero mean and unit variance.
+Otherwise, the variables are rescaled to have zero mean, but retain their observed variances}
 }
 \value{
-rho1 Estimation of the Pooled Autoregressive Coefficient.
-
-Model This function shows MP models A, B, and C. A assumes no deterministic component.
-B assumes a constant and allows for a fixed effect model. C allows a constant
-and trend.
-
-test.A.B A matrix containing t_a, t_b, t_a1, and t_a2.
-
-test.C.P A matrix containing the Pooled tests as well as Model C.
-
-extra.test a matrix containing t_c, rho1, adf30b.
-Or a matrix containing t_c, rho1, and the LM test for PANIC (2004)'s
-Idiosyncratic Components.
-
-pa-pb Pooled test from PANIC (2010). Null of nonstationarity.
-If both reject conclude stationarity. However, if only one rejects the panel
-is nonstationary.
-
-PMSB Unit root test tends to zero. The unit root hypothesis is rejected
-in favor of stationarity when the PMSB test goes below a critical value.
+adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
+will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B,
+PMSB, and rho. Pa, Pb, and the MP tests have a critical value of 1.96. PMSB is a degenerating critical value.
+The critical values can be found in this packages vignette or from Stock (1990).
 }
 \description{
 This function performs the tests of PANIC (2010) with a Monte Carlo
 Markov chain based on a gibbs sampler. One test estimates the pooled autoregressive
  coefficient, and one uses a sample moment. The sample moments test is based off of the modified
-Sargan-Bhargava test (PMSB).
+Sargan-Bhargava test (PMSB) while the pooled autoregressive component is based on the
+Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2004).
 }
 \references{
 Bai, Jushan, and Serena Ng.
 "Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
 Econometric Theory 26.04 (2010): 1088-1114. Print.
+
+ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 }
 

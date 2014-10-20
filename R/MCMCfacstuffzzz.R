@@ -22,21 +22,50 @@
 #' makes the number of factors equal to the number of columns whose sum of
 #' eigenvalues is less than  or equal to .5.
 #'
-#'@return Demeaned Errora
+#'@param burn The number of burn in iterators for the sampler
 #'
-#'@return Demeanded Errorb
+#'@param mcmc The number of iterations in the sampler
 #'
-#'@return NonDemeaned Errora
+#'@param thin The thinning interval used in the simulation. mcmc must be divisible by this value.
 #'
-#'@return NonDemeanded Errorb
+#'@param verbose A positive integer which determines whether or not the progress of the
+#' sampler is printed to the screen. If verbose is greater than 0 the iteration 
+#' number and the factor loadings and uniquenesses are printed to the screen 
+#' every verboseth iteration.
 #'
-#'@return Common Test
+#'@param seed The seed for the random number generator.
+#'
+#'@param lambda.start Starting values for the factor loading matrix Lambda.
+#'
+#'@param psi.start Starting values for the uniqueness
+#'
+#'@param l0 The means of the independent Normal prior on the factor loadings
+#'
+#'@param L0 A scalar or a matrix with the same dimensions as lambda. The precision (inverse variances)
+#' of the independent Normal prior on the factor loadings.
+#' 
+#'@param a0 scalar or a k-vector. Controls the shape of the inverse Gamma prior on the uniqueness.
+#'
+#'@param b0 Controls the scale of the inverse Gamma prior on the uniqueness.
+#'
+#'@param std.var if TRUE the variables are rescaled to have zero mean and unit variance.
+#' Otherwise, the variables are rescaled to have zero mean, but retain their observed variances
+#' 
+#'@return adf.mcmc A list of the MCMC samples of the test statistics. Returns the test statistics
+#'  Pooled Cointegration a,  Pooled Cointegration b, Pooled Idiosyncratic a, 
+#'  Pooled Idiosyncratic b, Pooled Demeaned test, and tests on Common components. The critical values for the Pooled Cointegration test
+#'  can be found on this packages vignette or in Bai and Ng (2004). The pooled idiosyncratic test has a critical
+#'  value of 1.64. The Pooled Demeaned test has a critical value of 2.87. The common components have a critical
+#'  value of -2.86.
 #'
 #'@return factor_mcmc The MCMC results from MCMCfactanal()
 #' 
 #'@references Bai, Jushan, and Serena Ng. 
 #'"A PANIC Attack on Unit Roots and Cointegration."
 #' Econometrica 72.4 (2004): 1127-1177. Print.
+#' 
+#' @references ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+#' in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 #'
 MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
                         seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
@@ -107,25 +136,25 @@ beta1 <- NULL
 fhat0 <- NULL
 for (j in 1:I(mcmc/thin)){
   ehat0[[j]] <- apply(dehat[[j]],2,cumsum)
-
+  
   fhat0[[j]] <- apply(dfhat[[j]],2,cumsum)
 }
 
 for (j in 1:I(mcmc/thin)){
   
-reg[[j]] <- cbind( matrix(1, I(Tn-1), 1), fhat0[[i]])
-
-ehat1[[j]] <- matrix(0, I(Tn-1), N)
-
-beta1[[j]] <- matrix(0, I(ic+1), N)
-
-for (i in 1:N){
+  reg[[j]] <- cbind( matrix(1, I(Tn-1), 1), fhat0[[i]])
   
-  beta1[[j]][,i] <- qr.solve(reg[[j]], x2[,i])
+  ehat1[[j]] <- matrix(0, I(Tn-1), N)
   
-  ehat1[[j]][,i] <- x2[,i] - reg[[j]] %*% beta1[[j]][,i]
-}
-
+  beta1[[j]] <- matrix(0, I(ic+1), N)
+  
+  for (i in 1:N){
+    
+    beta1[[j]][,i] <- qr.solve(reg[[j]], x2[,i])
+    
+    ehat1[[j]][,i] <- x2[,i] - reg[[j]] %*% beta1[[j]][,i]
+  }
+  
 }
 
 
@@ -191,14 +220,17 @@ adf50b[[j]] <- padf50[[j]]$pvalb
 
 }
 
-adf20ab<- matrix(unlist(adf20), mcmc, ic, byrow=TRUE)
+adf20ab<- as.data.frame(matrix(unlist(adf20), mcmc, ic, byrow=TRUE))
+
+    for (i in 1:ic){
+      colnames(adf20ab)[i] <-paste0("Common",i)
+    }
 
 adf.tests <- cbind(adf50a,adf50b,adf30a,adf30b,adf20ab)
-  if (fac.test == TRUE){
-    colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
+  
+
+    colnames(c("Pooled Cointegration a", "Pooled Cointegration b","Pooled Idiosyncratic a", "Pooled Idiosyncratic b", "Pooled Demeaned" ))
     results<- list(adf.mcmc = adf.tests, factor_MCMC = fac.test)
-  }else{
-    colnames(c("Demeaned Errora", "Demeanded Errorb","NonDemeaned Errora", "NonDemeanded Errorb", "Common Test" ))
-    results<- list(adf.mcmc = adf.tests)
-  }
 }
+
+
