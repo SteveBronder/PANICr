@@ -64,7 +64,7 @@
 #'"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
 #' Econometric Theory 26.04 (2010): 1088-1114. Print.
 #' 
-#'@references ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+#'@references Andrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
 #' in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 #'
 
@@ -284,23 +284,23 @@ if (demean == FALSE){
   
   x  <-as.matrix(x)
   
-  dX  <- trimr(mydiff(x, 1), 1, 0)
+  dx  <- trimr(mydiff(x, 1), 1, 0)
   
-  intdX <- as.matrix(t(apply(dX, 2, mean)))
+  intdX <- as.matrix(t(apply(dx, 2, mean)))
   
   repmat<-intdX[rep(seq_len(nrow(intdX)), each=I(nrow(x) - 1)),]
   
-  Dx <- dX - repmat
+  Dx <- dx - repmat
   
-  Tn <- dim(x)[1]
+  Tn <- dim(Dx)[1]
   
-  N  <- dim(x)[2]
+  N  <- dim(Dx)[2]
   
   scale <- sqrt(N) * Tn
   
   factors <- getnfac(dx, nfac, jj)
   
-  ic <- factors$ic1
+  ic <- factors$ic
   
   fac.test<- MCMCfactanal(~., factors = ic, data = as.data.frame(Dx), burnin = burn,
                           mcmc = mcmc, thin = thin, verbose = verbose, seed = seed, 
@@ -339,10 +339,10 @@ if (demean == FALSE){
   one <- NULL
   Q_T <- NULL
   lagehat <- NULL
-  top <- NULL
-  bottom <- NULL
-  rho1 <- NULL
-  res1 <- NULL
+  top0 <- NULL
+  bottom0 <- NULL
+  rho0 <- NULL
+  res0 <- NULL
   Nuisance <- NULL
   sig2 <- NULL
   omega2 <- NULL
@@ -421,13 +421,13 @@ if (demean == FALSE){
   SIG2 <- NULL
   HALF <- NULL
   
-  one     <-  cbind(matrix(1,I(Tn),1),as.matrix(seq(1,I(Tn))))
+  one     <-  cbind(matrix(1,I(Tn-1),1),as.matrix(seq(1,I(Tn-1))))
   
-  Q_T     <- diag(I(Tn)) - one %*% solve(crossprod(one)) %*% t(one)
+  Q_T     <- diag(I(Tn-1)) - one %*% solve(crossprod(one)) %*% t(one)
   
   
   for (i in 1:I(mcmc/thin)){
-  ehat[[i]]    <- Q_T %*% ehat0[[i]]
+  ehat[[i]]    <- Q_T %*% trimr(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1, 0)
   
   lagehat[[i]] <- Q_T %*% trimr(lagn(apply(dx- tcrossprod(dfhat[[i]],lamhat[[i]]),2,cumsum), 1), 1, 0)
   
@@ -471,7 +471,7 @@ if (demean == FALSE){
   
   rho1[[i]]   <- (top[[i]] - ADJ[[i]]) / bottom[[i]]
   #Model C
-  t_a1[[i]]   <- scale * (rho1 - 1) / sqrt(A1 * PHI4[[i]] / (OMEGA2[[i]] * OMEGA2[[i]]))
+  t_a1[[i]]   <- scale * (rho1[[i]] - 1) / sqrt(A1 * PHI4[[i]] / (OMEGA2[[i]] * OMEGA2[[i]]))
   
   t_a2[[i]]   <- scale * (rho1[[i]] - 1) * sqrt(bottom[[i]] / (scale^2)) * sqrt(B1 * OMEGA2[[i]] / PHI4[[i]])
   
