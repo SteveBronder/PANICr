@@ -11,7 +11,7 @@
 #'
 #'@param b number of rows to trim from matrix
 #'
-#'@return xx the trimmed dataset
+#'@return xx the trimmed data set
 #'
 
 trimr <- function(x, a, b){

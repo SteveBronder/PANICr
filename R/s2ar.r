@@ -1,6 +1,6 @@
 #'@title Finding optimal lag for dfgls test
 #'
-#'@description This function performs find the optimal lag kstar for the dfgls
+#'@description This function finds the optimal lag kstar for the dfgls
 #' test.
 #'
 #'@usage s2ar(yts, penalty, kmax, kmin)

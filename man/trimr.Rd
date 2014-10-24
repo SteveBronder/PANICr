@@ -13,7 +13,7 @@ trimr(x,a,b)
 \item{b}{number of rows to trim from matrix}
 }
 \value{
-xx the trimmed dataset
+xx the trimmed data set
 }
 \description{
 This function trims the dataset by n and/or t rows and columns

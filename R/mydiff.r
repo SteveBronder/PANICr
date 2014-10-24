@@ -1,7 +1,7 @@
 #'@title Difference a matrix
 #'
 #'@description This function differences an entire matrix by some defined
-#' variable k.
+#' constant k.
 #'
 #'@usage mydiff(x,k)
 #'

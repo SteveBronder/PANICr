@@ -2,7 +2,7 @@
 #'
 #'@description
 #' This function performs the ADF tests on the idiosyncratic and common components
-#' for PANIC (2004).
+#' for PANIC (2010).
 #'
 #'@usage adf(y,k,p)
 #'

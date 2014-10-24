@@ -23,7 +23,7 @@ is a reasonable point.}
 kstar A vector of optimal lags for each column of yts
 }
 \description{
-This function performs find the optimal lag kstar for the dfgls
+This function finds the optimal lag kstar for the dfgls
 test.
 }
 \references{

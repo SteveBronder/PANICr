@@ -6,7 +6,7 @@
 pool(a,x)
 }
 \arguments{
-\item{a}{A supplied matrix containg the containing p values}
+\item{a}{A supplied matrix containing p values}
 
 \item{x}{The adf test to be pooled}
 }

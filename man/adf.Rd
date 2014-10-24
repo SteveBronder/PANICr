@@ -20,6 +20,6 @@ tstat A vector of t statistics for each column of the input matrix
 }
 \description{
 This function performs the ADF tests on the idiosyncratic and common components
-for PANIC (2004).
+for PANIC (2010).
 }
 

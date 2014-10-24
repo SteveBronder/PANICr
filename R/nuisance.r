@@ -5,9 +5,9 @@
 #'
 #'@usage nuisance(res,k)
 #'
-#'@param res A matrix consisiting of the residuals from a factor model.
+#'@param res A matrix consisting of the residuals from a factor model.
 #'
-#'@param k If fixk is 0, then this automatic bandwidth selection is performed.
+#'@param k If fixk is 0, then automatic bandwidth selection is performed.
 #' Otherwise, the integer placed here will be the selected bandwidth.
 #'
 #'@return sig2 The vector of short run variances

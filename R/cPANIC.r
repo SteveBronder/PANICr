@@ -20,13 +20,13 @@
 #' makes the number of factors equal to the number of columns whose sum of
 #' eigenvalues is less than  or equal to .5.
 #'
-#'@return adff A data frame containing ADF p value, Demeaned Error term p value,Demeaned
-#'  and detrended p value,R squared for principle component
-#'  , And the significance of the Error components.
+#'@return adff A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
+#'  and detrended critical values ,R squared for principle component
+#'  , And the significance of the error components.
 #'
-#'@return adf.ind A matrix containing the pooled Demeaned ADF test on the data, the
+#'@return adf.ind A matrix containing the critical values for the pooled Demeaned ADF test on the data, the
 #' pooled ADF test on the common components, the pooled demeaned ADF test on the
-#' Idiosyncratic component, and the pooled first differenced and demeand ADF test on the
+#' Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
 #' Idiosyncratic component.
 #' 
 #'@references Bai, Jushan, and Serena Ng. 

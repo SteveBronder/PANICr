@@ -31,7 +31,7 @@ data. If FALSE, uses non-demeanded data generating process.}
 
 \item{verbose}{A positive integer which determines whether or not the progress of the
 sampler is printed to the screen. If verbose is greater than 0 the iteration
-number and the factor loadings and uniquenesses are printed to the screen
+number and the factor loadings and uniqueness are printed to the screen
 every verboseth iteration.}
 
 \item{seed}{The seed for the random number generator.}
@@ -60,7 +60,7 @@ The critical values can be found in this packages vignette or from Stock (1990).
 }
 \description{
 This function performs the tests of PANIC (2010) with a Monte Carlo
-Markov chain based on a gibbs sampler. One test estimates the pooled autoregressive
+Markov chain based on a Gibbs sampler. One test estimates the pooled autoregressive
  coefficient, and one uses a sample moment. The sample moments test is based off of the modified
 Sargan-Bhargava test (PMSB) while the pooled autoregressive component is based on the
 Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2004).

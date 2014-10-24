@@ -1,7 +1,6 @@
 #'@title Determining The Number of Factors In Approximate Factor Model
 #'
-#'@description
-#' This function approximates the number of factors in an approximate factor model
+#'@description This function approximates the number of factors in an approximate factor model
 #'  for large N by T matrices using the methods found in Bai and Ng (2002)
 #'
 #'@usage getnfac(x,kmax,jj)
@@ -32,7 +31,7 @@
 #'
 #' @return lambda Estimated factor loadings associated with common factors.
 #'
-#' @return Fhat Estimated common componenst
+#' @return Fhat Estimated common component
 #'
 #'
 #' @references Jushan, and Serena Ng. "Determining the Number of Factors in

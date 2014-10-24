@@ -24,7 +24,7 @@ penalty function
 
 lambda Estimated factor loadings associated with common factors.
 
-Fhat Estimated common componenst
+Fhat Estimated common component
 }
 \description{
 This function approximates the number of factors in an approximate factor model

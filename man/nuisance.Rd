@@ -6,9 +6,9 @@
 nuisance(res,k)
 }
 \arguments{
-\item{res}{A matrix consisiting of the residuals from a factor model.}
+\item{res}{A matrix consisting of the residuals from a factor model.}
 
-\item{k}{If fixk is 0, then this automatic bandwidth selection is performed.
+\item{k}{If fixk is 0, then automatic bandwidth selection is performed.
 Otherwise, the integer placed here will be the selected bandwidth.}
 }
 \value{

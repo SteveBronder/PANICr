@@ -15,6 +15,6 @@ xx A matrix that has been differenced by k periods ago.
 }
 \description{
 This function differences an entire matrix by some defined
-variable k.
+constant k.
 }
 

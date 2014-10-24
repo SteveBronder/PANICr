@@ -5,7 +5,7 @@
 #'@usage pool(a,x)
 #'
 #'
-#'@param a A supplied matrix containg the containing p values
+#'@param a A supplied matrix containing p values
 #'
 #'@param x The adf test to be pooled
 #'
