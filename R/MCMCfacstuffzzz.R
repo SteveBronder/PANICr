@@ -5,9 +5,9 @@
 #' moment, and Model C performs the MP test while projecting on intercept and trend.
 #'  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
 #'
-#'@usage MCMCpanic04(x, nfac, k1, jjburn = 1000, mcmc = 10000, thin = 10, verbose = 0,
+#'@usage MCMCpanic04(x, nfac, k1, jj,burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
 #'seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
-#'a0 = 0.001, b0 = 0.001, std.var = TRUE, fac.test=FALSE)
+#'a0 = 0.001, b0 = 0.001, std.var = TRUE)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -69,7 +69,7 @@
 #'
 MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
                         seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
-                        a0 = 0.001, b0 = 0.001, std.var = TRUE,fac.test=FALSE){
+                        a0 = 0.001, b0 = 0.001, std.var = TRUE){
 x<-as.matrix(x)
 
 Tn <- dim(x)[1]

@@ -6,9 +6,9 @@
 #' Sargan-Bhargava test (PMSB) while the pooled autoregressive component is based on the
 #' Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2004).
 #'
-#'@usage panic10(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin = 10,
+#'@usage MCMCpanic10(x, nfac, k1, jj, demean = FALSE, burn = 1000, mcmc = 10000, thin = 10,
 #' verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-#'   a0 = 0.001, b0 = 0.001, std.var = FALSE)
+#'   a0 = 0.001, b0 = 0.001, std.var = TRUE)
 #'
 #'
 #'@param x A NxT matrix containing the data

@@ -1,6 +1,5 @@
 Package: PANICr
-Title: Perform the Panel Analysis of Nonstationarity in Idiosyncratic and
-    Common Components (PANIC) from Bai and Ng (2004,2010)
+Title: PANIC Tests of Nonstationarity
 Description: This package contains a methedology that makes use of the factor
     struture of large dimensional panels to understand the nature of
     nonstationarity inherent in data. This is referred to as PANIC - Panel

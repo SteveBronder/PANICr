@@ -3,9 +3,9 @@
 \alias{MCMCpanic04}
 \title{PANIC (2004) MCMC Non-Stationarity Tests on Common and Idiosyncratic Components}
 \usage{
-MCMCpanic04(x, nfac, k1, jjburn = 1000, mcmc = 10000, thin = 10, verbose = 0,
+MCMCpanic04(x, nfac, k1, jj,burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
 seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-a0 = 0.001, b0 = 0.001, std.var = TRUE, fac.test=FALSE)
+a0 = 0.001, b0 = 0.001, std.var = TRUE)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}

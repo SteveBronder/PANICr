@@ -3,9 +3,9 @@
 \alias{MCMCpanic10}
 \title{MCMC PANIC (2010) Sample Moment and PAC tests for Idiosyncratic Component}
 \usage{
-panic10(x, nfac, k1, jj, demean, burn = 1000, mcmc = 10000, thin = 10,
+MCMCpanic10(x, nfac, k1, jj, demean = FALSE, burn = 1000, mcmc = 10000, thin = 10,
 verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-  a0 = 0.001, b0 = 0.001, std.var = FALSE)
+  a0 = 0.001, b0 = 0.001, std.var = TRUE)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}
@@ -70,7 +70,7 @@ Bai, Jushan, and Serena Ng.
 "Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
 Econometric Theory 26.04 (2010): 1088-1114. Print.
 
-ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+Andrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
 in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 }
 
