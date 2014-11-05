@@ -12,17 +12,17 @@
 #'
 #'
 
-minindc <- function(x){
-
-  ncols <- dim(x)[2]
-
-  nrows <- dim(x)[1]
-
-  pos <- matrix(0, ncols, 1)
-
-	  for (i in 1:ncols){
-
-		  pos[i,] <- which.min(x)
-		}
-	return(pos)
-}
+minindc <- function(x) {
+    
+    ncols <- dim(x)[2]
+    
+    nrows <- dim(x)[1]
+    
+    pos <- matrix(0, ncols, 1)
+    
+    for (i in 1:ncols) {
+        
+        pos[i, ] <- which.min(x)
+    }
+    return(pos)
+} 

@@ -12,28 +12,28 @@
 #'
 
 
-lagn <- function(x,n){
-
-  x  <- as.matrix(x)
-
-  nt <- dim(x)[1]
-
-  nc <- dim(x)[2]
-
+lagn <- function(x, n) {
+    
+    x <- as.matrix(x)
+    
+    nt <- dim(x)[1]
+    
+    nc <- dim(x)[2]
+    
     if (n > 0) {
-
-      x1 <- as.matrix(trimr(x,0,n))
-
-      y <- rbind(matrix(0,n,nc),x1)
-	  }
-
+        
+        x1 <- as.matrix(trimr(x, 0, n))
+        
+        y <- rbind(matrix(0, n, nc), x1)
+    }
+    
     if (n < 0) {
-
-	    x1 <- trimr(x,abs(n),0)
-
-	    y  <- rbind(x1,matrix(0,abs(n),nc))
-	  }
-
-
-return(y)
-	}
+        
+        x1 <- trimr(x, abs(n), 0)
+        
+        y <- rbind(x1, matrix(0, abs(n), nc))
+    }
+    
+    
+    return(y)
+} 

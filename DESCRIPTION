@@ -12,7 +12,7 @@ Description: This package contains a methodology that makes use of the factor
     approximates the number of factors based on Bai and Ng (2002)
 Depends:
     R(>= 2.10.0)
-Version: 0.0.0.2
+Version: 0.0.0.3
 License: GPL-3
 LazyData: no
 Author: Steve Bronder <sbronder@stevebronder.com>

@@ -16,25 +16,25 @@
 #'@return fhat The approximate factors of the approximate factor model
 #'
 #'@return lambda The factor loadings of the factor model
-pc <- function(y, nfac){
-
-  bigt   <- dim(y)[1]
-
-  bign   <- dim(y)[2]
-
-  eig    <- svd(crossprod(y))
-
-  Fhat0  <- eig$u
-
-  eigval <- as.matrix(eig$d)
-
-  Fhat1  <- eig$v
-
-  lambda <- Fhat0[,1:nfac] * sqrt(bign)
-
-  fhat   <- y%*%(lambda / bign)
-
-  ehat   <- y - tcrossprod(fhat, lambda)
-
-  return( list(ehat = ehat, fhat = fhat, lambda= lambda))
-}
+pc <- function(y, nfac) {
+    
+    bigt <- dim(y)[1]
+    
+    bign <- dim(y)[2]
+    
+    eig <- svd(crossprod(y))
+    
+    Fhat0 <- eig$u
+    
+    eigval <- as.matrix(eig$d)
+    
+    Fhat1 <- eig$v
+    
+    lambda <- Fhat0[, 1:nfac] * sqrt(bign)
+    
+    fhat <- y %*% (lambda/bign)
+    
+    ehat <- y - tcrossprod(fhat, lambda)
+    
+    return(list(ehat = ehat, fhat = fhat, lambda = lambda))
+} 

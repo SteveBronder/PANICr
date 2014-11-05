@@ -41,7 +41,7 @@ across configurations of the data while BIC(3) may not perform well for some
 configurations.
 }
 \references{
-Jushan, and Serena Ng. "Determining the Number of Factors in
-Approximate Factor Models." Econometrica 70.1 (2002): 191-221. Print.
+Jushan, and Serena Ng. 'Determining the Number of Factors in
+Approximate Factor Models.' Econometrica 70.1 (2002): 191-221. Print.
 }
 

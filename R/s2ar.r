@@ -28,60 +28,60 @@
 #'
 #'
 
-s2ar <- function(yts, penalty, kmax, kmin){
-
-  nt  <- nrow(yts)
-
-  minn <- 9999999999
-
-  tauu <- matrix(0, I(kmax+1), 1)
-
-  s2e <- 999 * matrix(1, I(kmax+1), 1)
-
-  dyts <- mydiff(yts,1)
-
-  reg  <- lagn(yts,1)
-
-    for (i in 1:kmax){
-
-		  reg <- cbind(reg, lagn(dyts,i))
-	  }
-
-  dyts0 <- dyts
-
-  reg0  <- reg
-
-  dyts0 <- trimr(dyts,I(kmax+1),0)
-
-  reg0  <- trimr(reg,I(kmax+1),0)
-
-  sumy  <- sum(reg0[,1] * reg0[,1])
-
-  nef   <- nt - kmax - 1
-    for (k in kmin:kmax){
-
-      b  <- myols(reg0[,1:I(k+1)], dyts0)
-
-      e  <- dyts0 - reg0[,1:I(k+1)] %*% b
-
-	s2e[I(k+1),] <- t(e) %*% e / nef
-
-	tauu[I(k+1),] <- (b[1] * b[1]) * sumy / s2e[I(k+1)]
-	}
-
-  kk <- seq(0,kmax)
-
-    if (penalty == 0){
-
-      mic <- log(s2e)+2.0*(kk+tauu)/nef
-
-    }else{
-
-      mic <- log(s2e) + log(nef) * (kk) / nef
-
-	}
-
-      kstar <- minindc(mic) - 1
-
-return(kstar)
-}
+s2ar <- function(yts, penalty, kmax, kmin) {
+    
+    nt <- nrow(yts)
+    
+    minn <- 9999999999
+    
+    tauu <- matrix(0, I(kmax + 1), 1)
+    
+    s2e <- 999 * matrix(1, I(kmax + 1), 1)
+    
+    dyts <- mydiff(yts, 1)
+    
+    reg <- lagn(yts, 1)
+    
+    for (i in 1:kmax) {
+        
+        reg <- cbind(reg, lagn(dyts, i))
+    }
+    
+    dyts0 <- dyts
+    
+    reg0 <- reg
+    
+    dyts0 <- trimr(dyts, I(kmax + 1), 0)
+    
+    reg0 <- trimr(reg, I(kmax + 1), 0)
+    
+    sumy <- sum(reg0[, 1] * reg0[, 1])
+    
+    nef <- nt - kmax - 1
+    for (k in kmin:kmax) {
+        
+        b <- myols(reg0[, 1:I(k + 1)], dyts0)
+        
+        e <- dyts0 - reg0[, 1:I(k + 1)] %*% b
+        
+        s2e[I(k + 1), ] <- t(e) %*% e/nef
+        
+        tauu[I(k + 1), ] <- (b[1] * b[1]) * sumy/s2e[I(k + 1)]
+    }
+    
+    kk <- seq(0, kmax)
+    
+    if (penalty == 0) {
+        
+        mic <- log(s2e) + 2 * (kk + tauu)/nef
+        
+    } else {
+        
+        mic <- log(s2e) + log(nef) * (kk)/nef
+        
+    }
+    
+    kstar <- minindc(mic) - 1
+    
+    return(kstar)
+} 

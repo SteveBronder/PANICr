@@ -14,35 +14,33 @@
 #'
 #'@return pvalb a P-value for the pooled cointegration test
 #'
-poolcoint <- function(a, x, r){
-
-     x <-as.matrix(x)
-
-     N <- ncol(x)
-
-  pval <- matrix(0,N,1)
-
-     r <- ifelse(r>4,4,r)
-
-	  for (i in 1:N){
-
-		  aa <- abs(a[,r] - x[,i])
-
-		  j1 <- min(aa)
-
-		  j2 <- which.min(aa)
-
-		  pval[i] <- a[j2, 4]
-		}
-
+poolcoint <- function(a, x, r) {
+    
+    x <- as.matrix(x)
+    
+    N <- ncol(x)
+    
+    pval <- matrix(0, N, 1)
+    
+    r <- ifelse(r > 4, 4, r)
+    
+    for (i in 1:N) {
+        
+        aa <- abs(a[, r] - x[, i])
+        
+        j1 <- min(aa)
+        
+        j2 <- which.min(aa)
+        
+        pval[i] <- a[j2, 4]
+    }
+    
     pvala <- -2 * sum(log(pval))
-
-    pvalb <- (pvala - 2*N) / sqrt(4*N)
-
+    
+    pvalb <- (pvala - 2 * N)/sqrt(4 * N)
+    
     results <- list(pvala = pvala, pvalb = pvalb)
-
-		return(results)
-
-	}
-
-
+    
+    return(results)
+    
+} 

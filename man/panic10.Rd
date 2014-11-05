@@ -47,11 +47,12 @@ in favor of stationarity when the PMSB test goes below a critical value.
 This function performs the tests of PANIC (2010).
 One estimates the pooled autoregressive coefficient, and one uses a sample
 moment. The sample moments test is based off of the modified
-Sargan-Bhargava test (PMSB).
+Sargan-Bhargava test (PMSB). Each test is degenerative and rejects after
+the test statistic goes below the critical value of -1.64.
 }
 \references{
 Bai, Jushan, and Serena Ng.
-"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
+'Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation.'
 Econometric Theory 26.04 (2010): 1088-1114. Print.
 }
 

@@ -11,23 +11,23 @@
 #'
 #'@return xx A matrix that has been differenced by k periods ago.
 
-mydiff<- function(x,k){
-
+mydiff <- function(x, k) {
+    
     nt <- dim(x)[1]
-
+    
     nc <- dim(x)[2]
-
-    if (k == 0){
-
+    
+    if (k == 0) {
+        
         xx <- x
-    } else{
-
+    } else {
+        
         x1 <- as.matrix(trimr(x, k, 0))
-
+        
         x2 <- as.matrix(trimr(lagn(x, k), k, 0))
-
-       zero <- matrix(0, k, nc)
-
-        xx<- rbind(zero, I(x1 - x2))
+        
+        zero <- matrix(0, k, nc)
+        
+        xx <- rbind(zero, I(x1 - x2))
     }
-}
+} 

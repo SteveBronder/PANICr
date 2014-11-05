@@ -55,8 +55,7 @@ Otherwise, the variables are rescaled to have zero mean, but retain their observ
 \value{
 adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
 will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B,
-PMSB, and rho. Pa, Pb, and the MP tests have a critical value of 1.96. PMSB is a degenerating critical value.
-The critical values can be found in this packages vignette or from Stock (1990).
+PMSB, and rho. All tests are degenerative and have a critical value of -1.64.
 }
 \description{
 This function performs the tests of PANIC (2010) with a Monte Carlo
@@ -67,7 +66,7 @@ Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2
 }
 \references{
 Bai, Jushan, and Serena Ng.
-"Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation."
+'Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation.'
 Econometric Theory 26.04 (2010): 1088-1114. Print.
 
 Andrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo

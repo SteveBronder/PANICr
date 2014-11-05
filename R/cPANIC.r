@@ -30,183 +30,171 @@
 #' Idiosyncratic component.
 #' 
 #'@references Bai, Jushan, and Serena Ng. 
-#'"A PANIC Attack on Unit Roots and Cointegration."
+#''A PANIC Attack on Unit Roots and Cointegration.'
 #' Econometrica 72.4 (2004): 1127-1177. Print.
 #'
-panic04 <- function(x, nfac, k1, jj){
-
-
-    x<-as.matrix(x)
-
+panic04 <- function(x, nfac, k1, jj) {
+    
+    
+    x <- as.matrix(x)
+    
     Tn <- dim(x)[1]
-
-    N  <- dim(x)[2]
-
-  intx<-as.matrix(t(apply(x, 2, mean)))
-
- repmat<-intx[rep(seq_len(nrow(intx)), each=I(nrow(x))),]
-
+    
+    N <- dim(x)[2]
+    
+    intx <- as.matrix(t(apply(x, 2, mean)))
+    
+    repmat <- intx[rep(seq_len(nrow(intx)), each = I(nrow(x))), ]
+    
     x1 <- x - repmat
-
-    x2 <- x1[2:Tn,]
-
+    
+    x2 <- x1[2:Tn, ]
+    
     dx <- trimr(mydiff(x, 1), 1, 0)
-
- scale <- sqrt(N) * Tn
-
-    k1 <- 4 * ceiling((Tn / 100)^(1/4))
-
-
- factors <- getnfac(dx, nfac, jj)
-
-
+    
+    scale <- sqrt(N) * Tn
+    
+    k1 <- 4 * ceiling((Tn/100)^(1/4))
+    
+    
+    factors <- getnfac(dx, nfac, jj)
+    
+    
     ic <- factors$ic
-
-    if (ic==0){
-      ic <- 1
+    
+    if (ic == 0) {
+        ic <- 1
     }
-
-      PC <- pc(dx,ic)
-
-      lamhat <- PC$lambda
-
-      dfhat <- PC$fhat
-
-
-
-
-if (sum(sum(lamhat))==0){
-
-  dehat <- dx
-}else{
-
-  dehat <- dx - tcrossprod(dfhat,lamhat)
-}
-
-
-
-  fhat0 <- apply(dfhat, 2, cumsum)
-
-  ehat0 <- apply(dehat, 2, cumsum)
-
-  ehat1 <- matrix(0, I(Tn-1), N)
-
-    reg <- cbind( matrix(1, I(Tn-1), 1), fhat0)
-
-  beta1 <- matrix(0, I(ic+1), N)
-
-	for (i in 1:N){
-
-		beta1[,i] <- qr.solve(reg, x2[,i])
-
-		ehat1[,i] <- x2[,i] - reg %*% beta1[,i]
-		}
-
-
-# some diagnostics to see the importance of the factors
-
-  R21 <- matrix(0, N, 1)
-
-  R22 <- matrix(0, N, 1)
-
-  fit <- matrix(0, dim(fhat0)[1], N)
-
-  fit1<- matrix(0, I(Tn-1), N)
-
-  fit2<- matrix(0, I(Tn-1), N)
-
-  lamhat <- as.matrix(lamhat)
-	for (i in 1:N){
-
-    fit1[,i] <- fhat0 %*% lamhat[i,]
-
-    fit2[,i] <- dfhat %*% lamhat[i,]
-
-    R21[i,]  <- sd(dehat[,i])^2 / sd(dx[,i])^2
-
-    R22[i,]  <- sd(fit1[,i]) / sd(ehat0[,i])
-		}
-
-
-
-
-  adf10 <- matrix(0, N, 1)
-
-  adf20 <- matrix(0, ic, 1)
-
-  adf30 <- matrix(0, N, 1)
-
-  adf40 <- matrix(0, N, 1)
-
-  adf50 <- matrix(0, N, 1)
-
-    if (ic == 1){
-      p = 0
+    
+    PC <- pc(dx, ic)
+    
+    lamhat <- PC$lambda
+    
+    dfhat <- PC$fhat
+    
+    
+    
+    
+    if (sum(sum(lamhat)) == 0) {
+        
+        dehat <- dx
+    } else {
+        
+        dehat <- dx - tcrossprod(dfhat, lamhat)
     }
-    if (ic == 0){
-      p = -1
+    
+    
+    
+    fhat0 <- apply(dfhat, 2, cumsum)
+    
+    ehat0 <- apply(dehat, 2, cumsum)
+    
+    ehat1 <- matrix(0, I(Tn - 1), N)
+    
+    reg <- cbind(matrix(1, I(Tn - 1), 1), fhat0)
+    
+    beta1 <- matrix(0, I(ic + 1), N)
+    
+    for (i in 1:N) {
+        
+        beta1[, i] <- qr.solve(reg, x2[, i])
+        
+        ehat1[, i] <- x2[, i] - reg %*% beta1[, i]
     }
-    if (ic > 1){
-      p = 1
+    
+    
+    # some diagnostics to see the importance of the factors
+    
+    R21 <- matrix(0, N, 1)
+    
+    R22 <- matrix(0, N, 1)
+    
+    fit <- matrix(0, dim(fhat0)[1], N)
+    
+    fit1 <- matrix(0, I(Tn - 1), N)
+    
+    fit2 <- matrix(0, I(Tn - 1), N)
+    
+    lamhat <- as.matrix(lamhat)
+    for (i in 1:N) {
+        
+        fit1[, i] <- fhat0 %*% lamhat[i, ]
+        
+        fit2[, i] <- dfhat %*% lamhat[i, ]
+        
+        R21[i, ] <- sd(dehat[, i])^2/sd(dx[, i])^2
+        
+        R22[i, ] <- sd(fit1[, i])/sd(ehat0[, i])
     }
-
-  adf10 <- adf04(x1, k1, p)
-
-	for (i in 1:ic){
-
-	adf20[i,] <- adf04(fhat0[,i], k1, p)  # test fhat0 for a unit root
-	}
-
-  adf30 <- adf04(ehat0, k1, -1)     # test ehat0
-
-  adf50 <- adf04(ehat1, k1, -1)     # test ehat1
-
-# now do the pooled test
-
-  padf10 <- pool(adfc2, adf10)
-
-  adf10a <- padf10$adf31a
-
-  adf10b <- padf10$adf31b
-
-
-  padf30 <- pool(adfnc, adf30)
-
-  adf30a <- padf30$adf31a
-
-  adf30b <- padf30$adf31b
-
-
-  padf50 <- poolcoint(coint0, adf50, ic)
-
-  adf50a <- padf50$pvala
-
-  adf50b <- padf50$pvalb
-
-
-
-	adfr <- as.data.frame(cbind(as.matrix(seq(1:N)),
-                              t(adf10),
-                              t(adf30),
-                              t(adf50),
-                              R21,R22))
-	colnames(adfr) <-c("Series",
-                     "adf",
-                     "ehat",
-                     "ehat1",
-                     "R2",
-                     "sifF/sige")
-
-  Common <- matrix(adf20)
-  colnames(Common)<- c("Common Test")
-
-  adf.ind <- matrix(c( "Pooled Demeaned", adf10a, adf10b,
-                       "Pooled Idiosyncratic", adf30a, adf30b,
-                       "Pooled Cointegration test", adf50a, adf50b),3,3,byrow=TRUE)
-  colnames(adf.ind)<- c("Test", "Values", "")
-results<- list(adff = adfr,pooladf=adf.ind, Common = Common)
-
-return(results)
-
-}
-
+    
+    
+    
+    
+    adf10 <- matrix(0, N, 1)
+    
+    adf20 <- matrix(0, ic, 1)
+    
+    adf30 <- matrix(0, N, 1)
+    
+    adf40 <- matrix(0, N, 1)
+    
+    adf50 <- matrix(0, N, 1)
+    
+    if (ic == 1) {
+        p = 0
+    }
+    if (ic == 0) {
+        p = -1
+    }
+    if (ic > 1) {
+        p = 1
+    }
+    
+    adf10 <- adf04(x1, k1, p)
+    
+    for (i in 1:ic) {
+        
+        adf20[i, ] <- adf04(fhat0[, i], k1, p)  # test fhat0 for a unit root
+    }
+    
+    adf30 <- adf04(ehat0, k1, -1)  # test ehat0
+    
+    adf50 <- adf04(ehat1, k1, -1)  # test ehat1
+    
+    # now do the pooled test
+    
+    padf10 <- pool(adfc2, adf10)
+    
+    adf10a <- padf10$adf31a
+    
+    adf10b <- padf10$adf31b
+    
+    
+    padf30 <- pool(adfnc, adf30)
+    
+    adf30a <- padf30$adf31a
+    
+    adf30b <- padf30$adf31b
+    
+    
+    padf50 <- poolcoint(coint0, adf50, ic)
+    
+    adf50a <- padf50$pvala
+    
+    adf50b <- padf50$pvalb
+    
+    
+    
+    adfr <- as.data.frame(cbind(as.matrix(seq(1:N)), t(adf10), t(adf30), t(adf50), R21, R22))
+    colnames(adfr) <- c("Series", "adf", "ehat", "ehat1", "R2", "sifF/sige")
+    
+    Common <- matrix(adf20)
+    colnames(Common) <- c("Common Test")
+    
+    adf.ind <- matrix(c("Pooled Demeaned", adf10a, adf10b, "Pooled Idiosyncratic", adf30a, adf30b, "Pooled Cointegration test", adf50a, adf50b), 3, 3, byrow = TRUE)
+    colnames(adf.ind) <- c("Test", "Values", "")
+    results <- list(adff = adfr, pooladf = adf.ind, Common = Common)
+    
+    return(results)
+    
+} 

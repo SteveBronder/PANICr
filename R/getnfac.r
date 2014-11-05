@@ -34,126 +34,126 @@
 #' @return Fhat Estimated common component
 #'
 #'
-#' @references Jushan, and Serena Ng. "Determining the Number of Factors in
-#' Approximate Factor Models." Econometrica 70.1 (2002): 191-221. Print.
+#' @references Jushan, and Serena Ng. 'Determining the Number of Factors in
+#' Approximate Factor Models.' Econometrica 70.1 (2002): 191-221. Print.
 #'
 #'
-getnfac <- function(x, kmax, jj){
-
-  x<-as.matrix(x)
-  Tn <- dim(x)[1]
-
-   N <- dim(x)[2]
-
-  NT  <- N * Tn
-
-  NT1 <- N + Tn
-
-   CT <- matrix(0, 1, kmax)
-
-   ii <- seq(1:kmax)
-
-  GCT <- min(N, Tn)
-
-      if (jj == 1){
-        CT[1,] <- log(NT / NT1) * ii * NT1 / NT
-	     }
-
-      if (jj == 2){
-        CT[1,] <- (NT1 / NT) * log(GCT) * ii
-    	}
-
-      if (jj == 3){
-        CT[1,] <- ii * log(GCT) / GCT
-      }
-
-      if (jj == 4){
-        CT[1,] <- 2 * ii / Tn
-      }
-
-      if (jj == 5){
-        CT[1,] <- log(T) * ii / Tn
-      }
-
-      if (jj == 6){
-        CT[1,] <- 2 * ii * NT1 / NT
-      }
-
-      if (jj == 7){
-        CT[1,] <- log(NT) * ii * NT1 / NT
-      }
-
-  IC1   <- matrix(0, dim(CT)[1], I(kmax+1))
-
-  Sigma <- matrix(0, 1, I(kmax+1))
-
-  XX    <- x %*% t(x)
-
-  eig   <- svd(t(XX))
-
-  Fhat0 <- eig$u
-
-  eigval<- as.matrix(eig$d)
-
-  Fhat1 <- eig$v
-
-  sumeigval <- apply(eigval, 2, cumsum) / sum(eigval)
-
-      if (jj < 8){
-        for ( i in kmax:1){
-
-          Fhat <- Fhat0[,1:i]
-
-          lambda <- crossprod(Fhat, x)
-
-          chat <- Fhat %*% lambda
-
-          ehat = x - chat
-
-          Sigma[i] <- mean(sum(ehat * ehat / Tn))
-
-          IC1[,i] <- log(Sigma[i]) + CT[,i]
+getnfac <- function(x, kmax, jj) {
+    
+    x <- as.matrix(x)
+    Tn <- dim(x)[1]
+    
+    N <- dim(x)[2]
+    
+    NT <- N * Tn
+    
+    NT1 <- N + Tn
+    
+    CT <- matrix(0, 1, kmax)
+    
+    ii <- seq(1:kmax)
+    
+    GCT <- min(N, Tn)
+    
+    if (jj == 1) {
+        CT[1, ] <- log(NT/NT1) * ii * NT1/NT
+    }
+    
+    if (jj == 2) {
+        CT[1, ] <- (NT1/NT) * log(GCT) * ii
+    }
+    
+    if (jj == 3) {
+        CT[1, ] <- ii * log(GCT)/GCT
+    }
+    
+    if (jj == 4) {
+        CT[1, ] <- 2 * ii/Tn
+    }
+    
+    if (jj == 5) {
+        CT[1, ] <- log(T) * ii/Tn
+    }
+    
+    if (jj == 6) {
+        CT[1, ] <- 2 * ii * NT1/NT
+    }
+    
+    if (jj == 7) {
+        CT[1, ] <- log(NT) * ii * NT1/NT
+    }
+    
+    IC1 <- matrix(0, dim(CT)[1], I(kmax + 1))
+    
+    Sigma <- matrix(0, 1, I(kmax + 1))
+    
+    XX <- x %*% t(x)
+    
+    eig <- svd(t(XX))
+    
+    Fhat0 <- eig$u
+    
+    eigval <- as.matrix(eig$d)
+    
+    Fhat1 <- eig$v
+    
+    sumeigval <- apply(eigval, 2, cumsum)/sum(eigval)
+    
+    if (jj < 8) {
+        for (i in kmax:1) {
+            
+            Fhat <- Fhat0[, 1:i]
+            
+            lambda <- crossprod(Fhat, x)
+            
+            chat <- Fhat %*% lambda
+            
+            ehat = x - chat
+            
+            Sigma[i] <- mean(sum(ehat * ehat/Tn))
+            
+            IC1[, i] <- log(Sigma[i]) + CT[, i]
         }
-
-  Sigma[kmax+1] <- mean(sum(x * x / Tn))
-
-  IC1[,kmax+1]  <- log(Sigma[kmax+1])
-
-  ic1 <- minindc(t(IC1))
-
-  ic1 <- ifelse(ic1<=kmax, ic1*1, ic1*0)
-
-     }
-
-      if (jj == 8){
-
-        for (j in 1:I(nrow(sumeigval))){
-
-          if (sumeigval[j] >= .5){
-            ic1 = j
-            break
-			     }
-	      }
-
-      }
-
-      if (ic1 == 0){
-
-        Fhat=matrix(0,T,N)
-
-        lambda=matrix(0,N,T)
-
-        chat=matrix(0,T,N)
-	    }else{
-
-        Fhat <- Fhat0[,1:ic1]
-
-        lambda <- crossprod(x,Fhat)
-
+        
+        Sigma[kmax + 1] <- mean(sum(x * x/Tn))
+        
+        IC1[, kmax + 1] <- log(Sigma[kmax + 1])
+        
+        ic1 <- minindc(t(IC1))
+        
+        ic1 <- ifelse(ic1 <= kmax, ic1 * 1, ic1 * 0)
+        
+    }
+    
+    if (jj == 8) {
+        
+        for (j in 1:I(nrow(sumeigval))) {
+            
+            if (sumeigval[j] >= 0.5) {
+                ic1 = j
+                break
+            }
+        }
+        
+    }
+    
+    if (ic1 == 0) {
+        
+        Fhat = matrix(0, T, N)
+        
+        lambda = matrix(0, N, T)
+        
+        chat = matrix(0, T, N)
+    } else {
+        
+        Fhat <- Fhat0[, 1:ic1]
+        
+        lambda <- crossprod(x, Fhat)
+        
         chat <- Fhat %*% t(lambda)
-	    }
-
-
-output <- list(ic = ic1, lambda = lambda, Fhat = Fhat)
-return(output)
-}
+    }
+    
+    
+    output <- list(ic = ic1, lambda = lambda, Fhat = Fhat)
+    return(output)
+} 
