@@ -69,7 +69,8 @@
 #'
 MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, a0 = 0.001, 
     b0 = 0.001, std.var = TRUE) {
-    x <- as.matrix(x)
+   
+  x <- as.matrix(x)
     
     Tn <- dim(x)[1]
     
@@ -87,12 +88,8 @@ MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, v
     
     scale <- sqrt(N) * Tn
     
-    k1 <- 4 * ceiling((Tn/100)^(1/4))
-    
-    
     factors <- getnfac(dx, nfac, jj)
-    
-    
+
     ic <- factors$ic
     
     if (is.null(ic)) {
@@ -100,6 +97,16 @@ MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, v
     }
     
     PC <- pc(dx, ic)
+    
+    if (ic == 1) {
+      p = 0
+    }
+    if (ic == 0) {
+      p = -1
+    }
+    if (ic > 1) {
+      p = 1
+    }
     
     lamhat <- PC$lambda
     
@@ -109,34 +116,33 @@ MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, v
         psi.start = psi.start, l0 = l0, L0 = L0, a0 = a0, b0 = b0, store.scores = TRUE, std.var = std.var)
     
     
-    dehat <- NULL
+
     lamhat <- NULL
-    dfhat <- NULL
-    ehat0 <- NULL
-    fhat0 <- NULL
-    
-    for (i in 1:I(mcmc/thin)) {
-        lamhat[[i]] <- matrix(fac.test[i, 1:I(N * ic)], N, ic)
-        
-        
-        
-        dfhat[[i]] <- matrix(fac.test[i, I(N * ic + N + 1):I((Tn - 1) * ic + N * ic + N)], I(Tn - 1), ic, byrow = TRUE)
-        
-        
-        dehat[[i]] <- dx - tcrossprod(dfhat[[i]], lamhat[[i]])
-    }
-    
-    reg <- NULL
-    ehat1 <- NULL
-    beta1 <- NULL
-    fhat0 <- NULL
+    dfhat  <- NULL
+    ehat0  <- NULL
+    fhat0  <- NULL
+    reg    <- NULL
+    ehat1  <- NULL
+    beta1  <- NULL
+    adf20  <- NULL
+    adf30  <- NULL
+    adf50  <- NULL
+    padf30 <- NULL
+    adf30a <- NULL
+    adf30b <- NULL
+    padf50 <- NULL
+    adf50a <- NULL
+    adf50b <- NULL
+    adf20ab <- NULL
+  
     for (j in 1:I(mcmc/thin)) {
-        ehat0[[j]] <- apply(dehat[[j]], 2, cumsum)
+        lamhat[[j]] <- matrix(fac.test[j, 1:I(N * ic)], N, ic)
+     
+        dfhat[[j]] <- matrix(fac.test[j, I(N * ic + N + 1):I((Tn - 1) * ic + N * ic + N)], I(Tn - 1), ic, byrow = TRUE)
+
+        ehat0[[j]] <- apply(dx - tcrossprod(dfhat[[j]], lamhat[[j]]), 2, cumsum)
         
         fhat0[[j]] <- apply(dfhat[[j]], 2, cumsum)
-    }
-    
-    for (j in 1:I(mcmc/thin)) {
         
         reg[[j]] <- cbind(matrix(1, I(Tn - 1), 1), fhat0[[i]])
         
@@ -151,42 +157,7 @@ MCMCpanic04 <- function(x, nfac, k1, jj, burn = 1000, mcmc = 10000, thin = 10, v
             ehat1[[j]][, i] <- x2[, i] - reg[[j]] %*% beta1[[j]][, i]
         }
         
-    }
-    
-    
-    
-    if (ic == 1) {
-        p = 0
-    }
-    if (ic == 0) {
-        p = -1
-    }
-    if (ic > 1) {
-        p = 1
-    }
-    adf30 <- NULL
-    adf20 <- NULL
-    adf50 <- NULL
-    adf10a <- NULL
-    adf10b <- NULL
-    padf30 <- NULL
-    adf30a <- NULL
-    adf30b <- NULL
-    padf50 <- NULL
-    adf50a <- NULL
-    adf50b <- NULL
-    padf10 <- NULL
-    
-    adf10 <- adf04(x1, k1, p)
-    
-    padf10 <- pool(adfc2, adf10)
-    
-    adf10a <- padf10$adf31a
-    
-    adf10b <- padf10$adf31b
-    
-    adf20 <- NULL
-    for (j in 1:I(mcmc/thin)) {
+ 
         adf20[[j]] <- matrix(0, 1, ic)
         
         for (i in 1:ic) {
