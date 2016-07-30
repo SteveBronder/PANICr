@@ -1,30 +1,26 @@
 #'@title PANIC (2004) Non-Stationarity Tests on Common and Idiosyncratic Components
 #'
-#'@description This function performs PANIC (2010) Model C, PAC, and PMSB tests.
-#' PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
-#' moment, and Model C performs the MP test while projecting on intercept and trend.
-#'  The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
-#'
-#'@usage panic04(x, nfac, k1, jj)
+#'@description This function performs the pooled tests on the idiosyncratic and common component from PANIC (2004).
 #'
 #'
-#'@param x A NxT matrix containing the data
+#'@usage panic04(x, nfac, k1, criteria)
 #'
-#'@param nfac An integer specifying the maximum number of factors allowed
+#'
+#'@param x An object of class xts holding the time series data
+#'
+#'@param nfac An integer speciyfing the maximum number of factors allowed
 #' while estimating the factor model.
 #'
 #'@param k1 The maximum lag allowed in the ADF test.
-#'
-#'@param jj an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
-#' IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
-#' makes the number of factors equal to the number of columns whose sum of
-#' eigenvalues is less than  or equal to .5.
+#' 
+#'@param criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 #'
 #'@return adff A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
 #'  and detrended critical values ,R squared for principle component
-#'  , And the significance of the error components.
+#'  , and the significance of the error components.
 #'
-#'@return adf.ind A matrix containing the critical values for the pooled Demeaned ADF test on the data, the
+#'@return adf.ind A matrix containing the critical values for the pooled Demeaned ADF test, the
 #' pooled ADF test on the common components, the pooled demeaned ADF test on the
 #' Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
 #' Idiosyncratic component.
@@ -33,31 +29,39 @@
 #''A PANIC Attack on Unit Roots and Cointegration.'
 #' Econometrica 72.4 (2004): 1127-1177. Print.
 #'
-panic04 <- function(x, nfac, k1, jj) {
+panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
     
-    
-    x <- as.matrix(x)
-    
+  # checks
+    is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
+
     Tn <- dim(x)[1]
-    
     N <- dim(x)[2]
     
-    intx <- as.matrix(t(apply(x, 2, mean)))
+    if (is.null(nfac)){
+      warning("nfac is NULL, setting the maximum number of factors equal to the number of columns")
+      nfac <- dim(x)[2]
+    }
+    if (is.null(k1)){
+      warning("k1 is NULL, setting k1 equal to  k1 4 * ceiling((T/100)^(1/4))")
+      k1 <- 4 * ceiling((dim(x)[1]/100)^(1/4))
+    }
+    if (is.null(criteria)){
+      warning("criteria is NULL, setting criteria to BIC3")
+      criteria <- "BIC3"
+    }
     
-    repmat <- intx[rep(seq_len(nrow(intx)), each = I(nrow(x))), ]
+    #x_dm
+    x_dm <- scale(x,center = TRUE,scale = FALSE)
     
-    x1 <- x - repmat
+    #x_trim
+    x_trim <- x_dm[2:Tn, ]
     
-    x2 <- x1[2:Tn, ]
-    
-    dx <- trimr(mydiff(x, 1), 1, 0)
-    
-    scale <- sqrt(N) * Tn
-    
-    k1 <- 4 * ceiling((Tn/100)^(1/4))
-    
-    
-    factors <- getnfac(dx, nfac, jj)
+    #dx
+    x_diff <- diff(x, 1)[2:Tn,]
+
+    scaler <- sqrt(N) * Tn
+
+    factors <- getnfac(x_diff, nfac, criteria)
     
     
     ic <- factors$ic
@@ -66,26 +70,19 @@ panic04 <- function(x, nfac, k1, jj) {
         ic <- 1
     }
     
-    PC <- pc(dx, ic)
-    
-    lamhat <- PC$lambda
-    
-    dfhat <- PC$fhat
-    
-    
-    
-    
-    if (sum(sum(lamhat)) == 0) {
+    PC <- pc(x_diff, ic)
+
+    if (sum(sum(PC$lambda)) == 0) {
         
-        dehat <- dx
+        dehat <- x_diff
     } else {
         
-        dehat <- dx - tcrossprod(dfhat, lamhat)
+        dehat <- x_diff - tcrossprod(PC$fhat, PC$lambda)
     }
     
     
     
-    fhat0 <- apply(dfhat, 2, cumsum)
+    fhat0 <- apply(PC$fhat, 2, cumsum)
     
     ehat0 <- apply(dehat, 2, cumsum)
     
@@ -97,9 +94,9 @@ panic04 <- function(x, nfac, k1, jj) {
     
     for (i in 1:N) {
         
-        beta1[, i] <- qr.solve(reg, x2[, i])
+        beta1[, i] <- qr.solve(reg, x_trim[, i])
         
-        ehat1[, i] <- x2[, i] - reg %*% beta1[, i]
+        ehat1[, i] <- x_trim[, i] - reg %*% beta1[, i]
     }
     
     
@@ -115,14 +112,14 @@ panic04 <- function(x, nfac, k1, jj) {
     
     fit2 <- matrix(0, I(Tn - 1), N)
     
-    lamhat <- as.matrix(lamhat)
+    PC$lambda <- as.matrix(PC$lambda)
     for (i in 1:N) {
         
-        fit1[, i] <- fhat0 %*% lamhat[i, ]
+        fit1[, i] <- fhat0 %*% PC$lambda[i, ]
         
-        fit2[, i] <- dfhat %*% lamhat[i, ]
+        fit2[, i] <- PC$fhat %*% PC$lambda[i, ]
         
-        R21[i, ] <- sd(dehat[, i])^2/sd(dx[, i])^2
+        R21[i, ] <- sd(dehat[, i])^2/sd(x_diff[, i])^2
         
         R22[i, ] <- sd(fit1[, i])/sd(ehat0[, i])
     }
@@ -150,7 +147,7 @@ panic04 <- function(x, nfac, k1, jj) {
         p = 1
     }
     
-    adf10 <- adf04(x1, k1, p)
+    adf10 <- adf04(x_dm, k1, p)
     
     for (i in 1:ic) {
         
@@ -185,16 +182,15 @@ panic04 <- function(x, nfac, k1, jj) {
     
     
     
-    adfr <- as.data.frame(cbind(as.matrix(seq(1:N)), t(adf10), t(adf30), t(adf50), R21, R22))
-    colnames(adfr) <- c("Series", "adf", "ehat", "ehat1", "R2", "sifF/sige")
+    adfr <- data.frame(series = seq(1:N),adf = adf10,ehat = adf30, ehat1 = adf50,R2 = R21,sifF_sige= R22)
+
+    Common <- data.frame(common_test = adf20)
     
-    Common <- matrix(adf20)
-    colnames(Common) <- c("Common Test")
+    adf_ind <- data.frame(Pooled_demeaned = c(adf10a, adf10b), pooled_idiosyncratic = c(adf30a, adf30b), pooled_cointegration_test = c(adf50a, adf50b))
     
-    adf.ind <- matrix(c("Pooled Demeaned", adf10a, adf10b, "Pooled Idiosyncratic", adf30a, adf30b, "Pooled Cointegration test", adf50a, adf50b), 3, 3, byrow = TRUE)
-    colnames(adf.ind) <- c("Test", "Values", "")
-    results <- list(adff = adfr, pooladf = adf.ind, Common = Common)
+    results <- list(adff = adfr, pooladf = adf_ind, Common = Common)
     
     return(results)
     
 } 
+

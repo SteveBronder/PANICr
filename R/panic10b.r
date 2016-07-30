@@ -1,12 +1,12 @@
 #'@title PANIC (2010) Sample Moment and PAC tests for Idiosyncratic Component
 #'
-#'@description This function performs the tests of PANIC (2010).
-#' One estimates the pooled autoregressive coefficient, and one uses a sample
+#'@description This function performs the tests of PANIC (2010) and models A, B, and C from Moon and Perron (2004).
+#' One PMSB test estimates the pooled autoregressive coefficient, and the other uses a sample
 #' moment. The sample moments test is based off of the modified
-#' Sargan-Bhargava test (PMSB). Each test is degenerative and rejects after
+#' Sargan-Bhargava test (MSB). Each test rejects after
 #' the test statistic goes below the critical value of -1.64.
 #'
-#'@usage panic10(x, nfac, k1, jj, demean)
+#'@usage panic10(x, nfac, k1, criteria, demean)
 #'
 #'
 #'@param x A NxT matrix containing the data
@@ -16,10 +16,8 @@
 #'
 #'@param k1 The maximum lag allowed in the ADF test.
 #'
-#'@param jj an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
-#' IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
-#' makes the number of factors equal to the number of columns whose sum of
-#' eigenvalues is less than  or equal to .5.
+#'@param criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 #'
 #'@param demean logical argument. If TRUE, function performs tests on demeaned
 #' data. If FALSE, uses non-demeanded data generating process.
@@ -51,35 +49,53 @@
 #''Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation.'
 #' Econometric Theory 26.04 (2010): 1088-1114. Print.
 
-panic10 <- function(x, nfac, k1, jj, demean) {
+panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
+  
+  # checks
+  all(sapply(x, is.numeric) == TRUE)  || stop("All columns must be numeric")
+  is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
+  if (is.null(nfac)){
+    warning("nfac is NULL, setting the maximum number of factors equal to the number of columns")
+    nfac <- dim(x)[2]
+  }
+  if (is.null(k1)){
+    warning("k1 is NULL, setting k1 equal to  k1 4 * ceiling((T/100)^(1/4))")
+    k1 <- 4 * ceiling((dim(x)[1]/100)^(1/4))
+  }
+  if (is.null(criteria)){
+    warning("criteria is NULL, setting criteria to BIC3")
+    criteria <- "BIC3"
+  }
+  if (is.null(demean)){
+    warning("demean is NULL, setting to TRUE")
+    demean = TRUE
+  }
     
+  
     if (demean == FALSE) {
-        x <- as.matrix(x)
         
+      #x_diff  
+      x_diff <- diff(x, 1)[2:nrow(x),]
+      
+      Tn <- dim(x_diff)[1]
+       N <- dim(x_diff)[2]
         
+      scaler <- sqrt(N) * Tn
         
-        dx <- trimr(mydiff(x, 1), 1, 0)
+      factors <- getnfac(x_diff, nfac, criteria)
         
-        Tn <- dim(dx)[1]
+      ic <- factors$ic
         
-        N <- dim(dx)[2]
+      lamhat <- factors$lambda
         
-        scale <- sqrt(N) * Tn
+      dfhat <- as.matrix(factors$Fhat)
         
-        factors <- getnfac(dx, nfac, jj)
-        
-        ic <- factors$ic
-        
-        lamhat <- factors$lambda
-        
-        dfhat <- factors$Fhat
-        
-        fhat <- apply(dfhat, 2, cumsum)
+      fhat <- apply(dfhat, 2, cumsum)
         
         if (sum(lamhat) == 0) {
-            dehat <- dx
+            dehat <- x_diff
         } else {
-            dehat <- dx - dfhat %*% t(lamhat)
+            dehat <- x_diff - dfhat %*% t(lamhat)
         }
         ehat0 <- apply(dehat, 2, cumsum)
         
@@ -139,9 +155,9 @@ panic10 <- function(x, nfac, k1, jj, demean) {
         
         rho1 <- (top0 - ADJ)/bottom0
         # P = 0, -1 MP Tests Model A
-        t_a <- scale * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+        t_a <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
         
-        t_b <- scale * (rho1 - 1) * sqrt(bottom0/(scale^2)) * sqrt(B1 * OMEGA2/PHI4)
+        t_b <- scaler * (rho1 - 1) * sqrt(bottom0/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
         # P = 0 , -1 PMSB test
         t_c <- sqrt(N) * (sum(diag(ehat0 %*% t(ehat0)))/(N * Tn^2) - U1 * OMEGA2)/sqrt(V1 * PHI4)
         
@@ -189,61 +205,47 @@ panic10 <- function(x, nfac, k1, jj, demean) {
         rho1 <- (top - ADJ)/bottom
         
         # Model B for P = 0
-        t_a1 <- scale * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+        t_a1 <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
         
-        t_a2 <- scale * (rho1 - 1) * sqrt(bottom/(scale^2)) * sqrt(B1 * OMEGA2/PHI4)
+        t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
+      
+        test_A_B <- data.frame( mp_test = c("ta","tb"), model_a = c(t_a, t_b), model_b = c(t_a1,t_a2))
         
+        PAC_test <- data.frame(PMSB = t_c, rho1 = rho1, pool_adf = adf30b)
         
-        
-        
-        
-        test.A.B <- matrix(c("ta", t_a, t_a1, "tb", t_b, t_a2), 2, 3, byrow = TRUE)
-        
-        colnames(test.A.B) <- c("MP", "Model A", "Model B")
-        
-        extra.test <- as.data.frame(t(matrix(c(t_c, rho1, adf30b), byrow = TRUE)))
-        
-        colnames(extra.test) <- c("PMSB", "rho1", "04 Pool ADF")
-        
-        output <- list(MP.tests = test.A.B, PAC.tests = extra.test)
+        output <- list(MP.tests = test_A_B, PAC.tests = PAC_test)
         
         return(output)
     } else {
         
         
-        x <- as.matrix(x)
+      #x_diff  
+      x_diff <- diff(x, 1)[2:nrow(x),]
         
-        dX <- trimr(mydiff(x, 1), 1, 0)
+      x_diff <- scale(x_diff,center = TRUE,scale = FALSE)
         
-        intdX <- as.matrix(t(apply(dX, 2, mean)))
+      Tn <- dim(x_diff)[1]
+      N <- dim(x_diff)[2]
         
-        repmat <- intdX[rep(seq_len(nrow(intdX)), each = I(nrow(x) - 1)), ]
+      scaler <- sqrt(N) * Tn
         
-        dx <- dX - repmat
+      factors <- getnfac(x_diff, nfac, criteria)
         
-        Tn <- dim(dx)[1]
+      ic <- factors$ic1
         
-        N <- dim(dx)[2]
+      lamhat <- factors$lambda
         
-        scale <- sqrt(N) * Tn
+      dfhat <- as.matrix(factors$Fhat)
         
-        factors <- getnfac(dx, nfac, jj)
+      fhat <- apply(dfhat, 2, cumsum)
         
-        ic <- factors$ic1
-        
-        lamhat <- factors$lambda
-        
-        dfhat <- as.matrix(factors$Fhat)
-        
-        fhat <- apply(dfhat, 2, cumsum)
-        
-        if (sum(sum(lamhat)) == 0) {
+      if (sum(sum(lamhat)) == 0) {
             
-            dehat <- dx
-        } else {
+          dehat <- x_diff
+      } else {
             
-            dehat <- dx - dfhat %*% t(lamhat)
-        }
+          dehat <- x_diff - dfhat %*% t(lamhat)
+      }
         
         ehat0 <- apply(dehat, 2, cumsum)
         
@@ -287,9 +289,7 @@ panic10 <- function(x, nfac, k1, jj, demean) {
         
         
         # No longer do detrending
-        
-        
-        
+
         ADJ <- SIG2/OMEGA2
         
         A1 <- 36/5
@@ -302,9 +302,9 @@ panic10 <- function(x, nfac, k1, jj, demean) {
         
         
         # P = 1 for Pa and Pb
-        t_a <- scale * (rho0 - 1 + ADJ * 3/Tn)/sqrt(A1 * PHI4 * SIG2^2/(OMEGA2^4))
+        t_a <- scaler * (rho0 - 1 + ADJ * 3/Tn)/sqrt(A1 * PHI4 * SIG2^2/(OMEGA2^4))
         
-        t_b <- scale * (rho0 - 1 + ADJ * 3/Tn) * sqrt(bottom0/(scale^2)) * sqrt(B1 * (OMEGA2^3)/(PHI4 * (SIG2^2)))
+        t_b <- scaler * (rho0 - 1 + ADJ * 3/Tn) * sqrt(bottom0/(scaler^2)) * sqrt(B1 * (OMEGA2^3)/(PHI4 * (SIG2^2)))
         # P = 1 PMSB
         t_c <- sqrt(N) * (sum(diag(ehat0 %*% t(ehat0)))/(N * Tn^2) - U1 * OMEGA2)/sqrt(V1 * PHI4)
         
@@ -350,19 +350,13 @@ panic10 <- function(x, nfac, k1, jj, demean) {
         
         rho1 <- (top - ADJ)/bottom
         # Model C
-        t_a1 <- scale * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+        t_a1 <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
         
-        t_a2 <- scale * (rho1 - 1) * sqrt(bottom/(scale^2)) * sqrt(B1 * OMEGA2/PHI4)
+        t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
         
+        test.C.P <- data.frame(pool_test = c("Pa","Pb"),P = c(t_a,t_b), mp_test = c("ta","tb"),model_c =c(t_a1, t_a2))
         
-        
-        test.C.P <- as.data.frame(matrix(c("Pa", t_a, "ta", t_a1, "Pb", t_b, "tb", t_a2), 2, 4, byrow = TRUE))
-        
-        colnames(test.C.P) <- c("Pool Test", "P", "MP Test", "Model C")
-        
-        extra.test <- as.data.frame(t(matrix(c(t_c, rho1, adf31b), byrow = TRUE)))
-        
-        colnames(extra.test) <- c("PMSB", "rho1", "04 Pool LM")
+        extra.test <- data.frame(PMSB = t_c,rho1 = rho1, pool_lm_04 = adf31b)
         
         output <- list(MP.tests = test.C.P, PAC.tests = extra.test)
         

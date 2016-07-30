@@ -19,7 +19,10 @@ Author: Steve Bronder <sbronder@stevebronder.com>
 Maintainer: Steve Bronder <sbronder@stevebronder.com>
 URL: stevebronder.com
 Suggests:
-    knitr
+    knitr,
+    testthat
 VignetteBuilder: knitr
 Imports:
-    MCMCpack
+    MCMCpack,
+    xts
+RoxygenNote: 5.0.1
