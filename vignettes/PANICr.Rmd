@@ -16,15 +16,15 @@ The purpose of this package is to perform the Panel Analysis of Nonstationarity 
 2. Cross-Correlation in panel structure
 3. Weak strength to Large N or large T
 
-Instead of testing the data directly, PANIC performs a factor model to derive the common and idiosyncratic components of the panel. By using the BIC3 from Bai and Ng (2004) it is possible to determine the number of common components in panels that reduce cross correlation in the error term. In this vignette we will perform PANIC on three aggregate levels of National Income and Product Accounts in order to test these aggregates for aggregation bias
+Instead of testing the data directly, PANIC performs a factor model to derive the common and idiosyncratic components. By using the BIC3 from Bai and Ng (2004) it is possible to determine the number of common components that will reduce cross correlation in the error term. In this vignette we will perform PANIC on the most disaggregate data in the National Income and Product Accounts.
 
 ## Vignette Info
 
-This vignette will use the functions `panic10()` and `panic04()` availabe through `library(PANICr)`. These functions perform a factor model on each level of aggregation, derive the common and idiosyncratic components, and then perform several pooled test statistics. One of several benefits of PANIC is that by reducing cross-correlation we allow valid pooling of individual statistics and so panel tests can be run that have reasonable strength. Performing the factor analysis using BIC3, the criteria for determining the number of factors in our approximate factor model, allows us to determine whether the nonstationarity is pervasive, variable specific, or both.
+This vignette will use the functions `panic10()` and `panic04()` availabe through `library(PANICr)`. These functions perform a factor model on an xts object, derive the common and idiosyncratic components, and then perform several pooled test statistics. By reducing cross-correlation we allow valid pooling of individual statistics so that each test will have reasonable power. Examining nonstationarity in the common and idiosyncratic components allows for studying into whether the nonstationarity is pervasive, variable specific, or both.
 
 ## Data
 
-The data we use is gathered from the [Price Indexes for Personal Consumption Expenditures by Type of Product](http://www.bea.gov/iTable/iTableHtml.cfm?reqid=12&step=3&isuri=1&1203=16) available from the BEA. The data is monthly from 1959 to 2013^[ T = 660]. At this point we run the data through [X-13](https://www.census.gov/srd/www/winx13/)^[ X-13 is a software program available from the U.S. Census Bureau that seasonally adjusts multiple time series using X-13ARIMA-SEATS process]. After extracting each sector we divide them up into three seperate levels of aggregation from highest level of aggregation to lowest. To turn this dataset into year on year inflation we perform $log(p_{t}/p_{t-12})$. The data is available already cleaned and manipulated as NIPAagg1, NIPAagg2, and NIPAagg3, respectivly. 
+The data we use is gathered from the [Price Indexes for Personal Consumption Expenditures by Type of Product](http://www.bea.gov/iTable/iTableHtml.cfm?reqid=12&step=3&isuri=1&1203=16) available from the BEA. The data is monthly from 1959 to 2016^[ T = 689].  To turn this dataset into year on year inflation we perform $log(p_{t}/p_{t-12})$. The data is available already cleaned and manipulated as `NIPA_agg_9`
 
 ## Model
 
@@ -34,33 +34,35 @@ $X_{it} = D_{it} + \lambda_{i}' F_{t} + e_{it}$
 
 Where $D_{it}$ is a polynomial trend function, $F_{t}$ is an $r\times{1}$ vector of common factors, and $\lambda_{i}$ is a vector of factor loadings. The panel $X_{it}$ is the sum of a deterministic component $D_{it}$ , a common component $\lambda_{i}' F_{t}$, and an error $e_{it}$ that is largely idiosyncratic. A factor model with $N$ variables has $N$ idiosyncratic components, but a smaller number of common factors. $D_{it}$ can be modeled by $P$. In PANIC 2004, When the number of common factors is greater than one, $P=1$ and the deterministic trend has an individual specific fixed effect and time trend. When the number of common factors is equal to one, $P=0$ is an individual specific fixed effect. When the number of common factors is zero, $P=0$ is neither. 
 
-PANIC 2010 examines the data with ADF models A, B, and C. A assumes no deterministic componet, B assumes a constant to allow for a fixed effect, and C allows a constant and a trend. Note that this is different than P as P is a data generating process while Models A, B, and C impose these constraints inside of the ADF test.
+PANIC 2010 examines the data with ADF models A, B, and C. A assumes no deterministic component, B assumes a constant to allow for a fixed effect, and C allows a constant and a trend. Note that this is different than $P$ as $P$ is a data generating process while Models A, B, and C impose these constraints inside of the ADF test.
 
 The benefit of this factor model is that, if the number of factors has been correctly determined, the error term will be largely idosyncratic and the common components will explain the largest variance of the data. To determine the approximate number of factors we use the BIC3 from Bai and Ng (2002) such that:
 
 $BIC3 = V(k,\hat{F}^k)+k\hat{\sigma}^2 + \frac{(N+T-k)ln(NT)}{NT}$
 
-$(k,\hat{F}^k)$ is the average residual   variance when k factors are assumed for each cross-section unit. $\hat{\sigma}^2$ is the mean of the error term squared over N and T.
+$V(k,\hat{F}^k)$ is the average residual   variance when k factors are assumed for each cross-section unit. $\hat{\sigma}^2$ is the mean of the error term squared over N and T.
 
-Once we have this model we perform ADF style pooled tests on the idiosyncratic and common components. `panic04` and `panic10` ask for *nfac*, the number of estimated factors, *k1*, the maximum lag allowed in the ADF test, and *jj*, the criteria to determine the number of factors in our approximate factor model. *nfac* is weak to underestimation so it is suggested to overestimate the number of factors.  To determine the lag of the ADF test Bai and Ng (2002) suggest $4(\sqrt{\frac{T}{100}})$. *jj* is an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1), IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8 makes the number of factors equal to the number of columns whose sum of eigenvalues is less than or equal to .5. `panic10()` also has the option to run models on demeaned or non-demeaned data (TRUE or FALSE) which will return models A and B in the first case and C in the second.
+Once we have this model we perform ADF style pooled tests on the idiosyncratic and common components. `panic04()` and `panic10()` ask for `nfac`, the number of estimated factors, `k1`, the maximum lag allowed in the ADF test, and `criteria`, the criteria to determine the number of factors in our approximate factor model. `nfac` is weak to underestimation so it is suggested to overestimate the number of factors.  To determine the lag of the ADF test Bai and Ng (2002) suggest $4(\sqrt{\frac{T}{100}})$. `criteria` is a character vector with a value of either IC(1), IC(2), IC(3), AIC(1), BIC(1), AIC(3), BIC(3), or eigen. Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than or equal to .5. `panic10()` also has the option to run models on demeaned or non-demeaned data (`TRUE` or `FALSE`) which will return models A and B in the first case and C in the second.
 
-With this information it is now appropriate to start running our tests.
+With this information it is now appropriate to start running our tests. We upload the NIPA account data assume there can be at most one hundred factors. The maximum lags are set to seven and the BIC(3) criteria is used to evaluate the number of true factors. 
 
 ```{r, results='asis'}
 
 library(PANICr)
-data("NIPA_agg_5")
-agg1.04 <- panic04(NIPA_agg_5, nfac = 12,k1 = 7,criteria = "BIC3")
+data("NIPA_agg_9")
+agg1.04 <- panic04(NIPA_agg_9, nfac = 100,k1 = 7,criteria = "BIC3")
 ```
+
+`panic04()` returns a lot, but we will focus on the pooled tests and the test on the common components.
 ```{r,echo=FALSE,results='asis'}
 knitr::kable(agg1.04[[2]])
 
-knitr::kable(agg1.04[[3]])
+knitr::kable(data.frame(Components = 1:7, common_tests = agg1.04[[3]]))
 ```
 
 
 ```{r}
-agg1.10.d <- panic10(NIPA_agg_5,nfac = 12, k1 = 7,criteria = "BIC3",demean = TRUE)
+agg1.10.d <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = TRUE)
 ```
 
 ```{r,echo=FALSE,results='asis'}
@@ -69,7 +71,7 @@ knitr::kable(agg1.10.d[[2]])
 ```
 
 ```{r}
-agg1.10.nd <- panic10(NIPA_agg_5,nfac = 12, k1 = 7,criteria = "BIC3",demean = FALSE)
+agg1.10.nd <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = FALSE)
 ```
 
 ```{r,echo=FALSE,results='asis'}
@@ -78,4 +80,3 @@ knitr::kable(agg1.10.nd[[2]])
 ```
 
 
-## Interpreting Results

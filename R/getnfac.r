@@ -7,19 +7,16 @@
 #'
 #'@param x A NxT matrix containing the data.
 #'
-#'@param kmax The maximum number of common factors used to compute the criterion
-#' function for the estimate of ic, the number of common factors. This methedology
-#' is weak to underestimation of the number of common factors. It is suggested
-#' that overestimation is preferred.
+#'@param kmax The maximum number of common factors to search over. This methedology
+#' is weak to underestimation of the number of common factors so setting this value higher is preferred.
 #'
-#' @param criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#' @param criteria a character vector of length one with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 #'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 #'
 #' @details This function approximates the number of factors in an approximate
 #' factor model. Amongst the penalty functions BIC(3) has been found to be
-#' strict against cross-sectional dependence and is recommended for large
-#' matrices. IC(1), IC(2), and IC(3) . AIC(1) will not work for all N and T.
-#' BIC(1) will not work for small N relative to T. AIC(3) and BIC(3) take into
+#' strict against cross-sectional dependence and is recommended for panels with greater than 18 series.
+#'  IC(1), IC(2), and IC(3). BIC(1) is not recommended for small N relative to T. AIC(3) and BIC(3) take into
 #' account the panel structure of the data. AIC(3) performs consistently
 #' across configurations of the data while BIC(3) performs better on
 #' large N data sets.
@@ -36,7 +33,7 @@
 #' Approximate Factor Models.' Econometrica 70.1 (2002): 191-221. Print.
 #'
 #'
-getnfac <- function(x, kmax, criteria) {
+getnfac <- function(x, kmax = NULL, criteria = NULL) {
   # checks
   all(sapply(x, is.numeric) == TRUE)  || stop("All columns must be numeric")
   is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
@@ -162,5 +159,6 @@ getnfac <- function(x, kmax, criteria) {
     
     
     output <- list(ic = ic1, lambda = lambda, Fhat = Fhat)
+    
     return(output)
 } 

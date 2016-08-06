@@ -213,8 +213,9 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
         
         PAC_test <- data.frame(PMSB = t_c, rho1 = rho1, pool_adf = adf30b)
         
-        output <- list(MP.tests = test_A_B, PAC.tests = PAC_test)
+        results <- list(MP.tests = test_A_B, PAC.tests = PAC_test)
         
+        output <- structure(results,class = 'panic')
         return(output)
     } else {
         
@@ -358,8 +359,9 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
         
         extra.test <- data.frame(PMSB = t_c,rho1 = rho1, pool_lm_04 = adf31b)
         
-        output <- list(MP.tests = test.C.P, PAC.tests = extra.test)
+        results <- list(MP.tests = test.C.P, PAC.tests = extra.test)
         
+        output <- structure(results,class = 'panic')
         return(output)
         
     }
