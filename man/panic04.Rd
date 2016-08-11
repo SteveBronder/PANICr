@@ -12,20 +12,36 @@ panic04(x, nfac, k1, criteria)
 \item{nfac}{An integer speciyfing the maximum number of factors allowed
 while estimating the factor model.}
 
-\item{k1}{The maximum lag allowed in the ADF test.}
+\item{k1}{an Integer that is the maximum lag allowed in the ADF test.}
 
 \item{criteria}{a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.}
 }
 \value{
-adff A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
+pool_adf A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
  and detrended critical values ,R squared for principle component
  , and the significance of the error components.
 
-adf.ind A matrix containing the critical values for the pooled Demeaned ADF test, the
+adf.ind A data frame containing the critical values for the pooled Demeaned ADF test, the
 pooled ADF test on the common components, the pooled demeaned ADF test on the
 Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
 Idiosyncratic component.
+
+adff A matrix containing summary information for the tests made on each series.
+
+Common A data frame of the test results on the common component
+
+nfac An integer speciyfing the maximum number of factors allowed
+while estimating the factor model.
+
+k1 an integer that is the maximum lag allowed in the ADF test.
+
+criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+ Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
+
+func a character vector representing which function was run
+
+ic a double containing the number of components that were estimated
 }
 \description{
 This function performs the pooled tests on the idiosyncratic and common component from PANIC (2004).

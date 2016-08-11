@@ -16,6 +16,7 @@
 #'
 #'@return half The vector of one-sided variances
 #'
+#'@export
 
 nuisance <- function(res, k) {
     

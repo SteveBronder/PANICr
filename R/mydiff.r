@@ -10,6 +10,8 @@
 #'@param k The length of difference to perform on each vector of the NxT matrix.
 #'
 #'@return xx A matrix that has been differenced by k periods ago.
+#'
+#'@export
 
 mydiff <- function(x, k) {
     

@@ -4,17 +4,17 @@
 \alias{pool}
 \title{Pooling Function for PANIC (2010)}
 \usage{
-pool(a,x)
+pool(p_values,test_values)
 }
 \arguments{
-\item{a}{A supplied matrix containing p values}
+\item{p_values}{p_values supplied matrix containing p values}
 
-\item{x}{The adf test to be pooled}
+\item{test_values}{The adf test to be pooled}
 }
 \value{
-adf31a a P-value for the pooled test
+adf31a x P-value for the pooled test
 
-adf31b a P-value for the pooled test
+adf31b x P-value for the pooled test
 }
 \description{
 This function find the P values for the pooled test in PANIC (2010)

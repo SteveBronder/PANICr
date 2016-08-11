@@ -2,7 +2,7 @@
 % Please edit documentation in R/nw.r
 \name{nw}
 \alias{nw}
-\title{Bandwidth selection}
+\title{Bandwidth Selection}
 \usage{
 nw(v,fixk)
 }

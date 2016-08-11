@@ -11,6 +11,7 @@
 #'
 #'@return yt The data detrended
 #'
+#'@export
 glsd <- function(y, p) {
     
     y <- as.matrix(y)

@@ -10,7 +10,7 @@
 #'@return pos A vector containig an index of the row position of the lowest
 #' value within each column of a matrix.
 #'
-#'
+#'@export
 
 minindc <- function(x) {
     

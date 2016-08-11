@@ -29,7 +29,7 @@
 #'
 #'@return kstar A vector of the lags for each column's vector autoregression.
 #'
-#'
+#'@export
 adfp <- function(y, penalty, kmax, kmin, p) {
     ####### adfg??
     y <- as.matrix(y)

@@ -32,11 +32,23 @@
 #' @references Jushan Bai and Serena Ng. 'Determining the Number of Factors in
 #' Approximate Factor Models.' Econometrica 70.1 (2002): 191-221. Print.
 #'
-#'
+#'@export
 getnfac <- function(x, kmax = NULL, criteria = NULL) {
-  # checks
+  
+  
+  #######
+  ## Begin: Tests
+  #######
   all(sapply(x, is.numeric) == TRUE)  || stop("All columns must be numeric")
   is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
+  if (!(kmax %% 1 == 0)){
+    stop(" k1 must be an integer.")
+  }
+  if (is.null(criteria)){
+    warning("criteria is NULL, setting criteria to BIC3")
+    criteria <- "BIC3"
+  }
+  ########
   
     Tn <- dim(x)[1]
     

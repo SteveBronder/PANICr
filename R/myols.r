@@ -8,6 +8,7 @@
 #'
 #'@param y A 1xT vector that is used as the independent variable.
 #'
+#'@export
 myols <- function(x, y) {
     
     bhat <- qr.solve(crossprod(x)) %*% t(x) %*% y

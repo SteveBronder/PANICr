@@ -17,6 +17,7 @@
 #'
 #'@return tstat A vector of t statistics for each column of the input matrix
 #'
+#'@export
 adf <- function(y, k, p) {
     
     y <- as.matrix(y)

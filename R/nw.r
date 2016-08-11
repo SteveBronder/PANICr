@@ -1,4 +1,4 @@
-#'@title Bandwidth selection
+#'@title Bandwidth Selection
 #'
 #'@description This function at fixk 0 finds the bandwidth, or lag length, of the
 #' short, long, and run variance of a residual.
@@ -16,6 +16,8 @@
 #'
 #'@references Moon, R. & B. Perron (2004) Testing for a unit root in panels with
 #' dynamic factors. Journal of Econometrics 122, 81-126.
+#' 
+#'@export
 #'
 
 nw <- function(v, fixk) {

@@ -6,6 +6,6 @@
 #'
 #'@description A dataset containing critical values for PANIC (2004) demeaned data ADF test
 #'
-#'
+#'@export
 #'
 NULL 

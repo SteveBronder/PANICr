@@ -9,9 +9,9 @@ test_that("Panic 04 consistency", {
   
   set.seed(1234)
   expect_equal(panic04(test1,
-                       nfac = 10,
+                       nfac = 10L,
                        k1 = 7,
-                       criteria = "BIC3"), test_04)
+                       criteria = "IC1"), test_04)
 })
 
 test_that("Panic 10 demeaned consistency", {
@@ -21,9 +21,9 @@ test_that("Panic 10 demeaned consistency", {
   
   set.seed(1234)
   expect_equal(panic10(test1,
-                       nfac = 10,
+                       nfac = 10L,
                        k1 = 7,
-                       criteria = "BIC3",
+                       criteria = "IC1",
                        demean = TRUE), test_10_dm)
 })
 
@@ -34,8 +34,8 @@ test_that("Panic 10 non-demeaned consistency", {
   
   set.seed(1234)
   expect_equal(panic10(test1,
-                       nfac = 10,
+                       nfac = 10L,
                        k1 = 7,
-                       criteria = "BIC3",
+                       criteria = "IC1",
                        demean = FALSE), test_10_ndm)
 })

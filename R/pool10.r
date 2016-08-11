@@ -13,6 +13,7 @@
 #'
 #'@return adf31b x P-value for the pooled test
 #'
+#'@export
 
 pool <- function(p_values, test_values) {
     

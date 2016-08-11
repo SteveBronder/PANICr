@@ -10,7 +10,8 @@
 #'
 #'@return y A 1XT vector with a lag n added
 #'
-
+#'
+#'@export
 
 lagn <- function(x, n) {
     

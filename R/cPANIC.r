@@ -11,41 +11,64 @@
 #'@param nfac An integer speciyfing the maximum number of factors allowed
 #' while estimating the factor model.
 #'
-#'@param k1 The maximum lag allowed in the ADF test.
+#'@param k1 an Integer that is the maximum lag allowed in the ADF test.
 #' 
 #'@param criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 #'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 #'
-#'@return adff A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
+#'@return pool_adf A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
 #'  and detrended critical values ,R squared for principle component
 #'  , and the significance of the error components.
 #'
-#'@return adf.ind A matrix containing the critical values for the pooled Demeaned ADF test, the
+#'@return adf.ind A data frame containing the critical values for the pooled Demeaned ADF test, the
 #' pooled ADF test on the common components, the pooled demeaned ADF test on the
 #' Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
 #' Idiosyncratic component.
 #' 
+#' @return adff A matrix containing summary information for the tests made on each series.
+#' 
+#'@return Common A data frame of the test results on the common component
+#'
+#'@return nfac An integer speciyfing the maximum number of factors allowed
+#' while estimating the factor model.
+#'
+#'@return k1 an integer that is the maximum lag allowed in the ADF test.
+#' 
+#'@return criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
+#'
+#'@return func a character vector representing which function was run
+#'
+#'@return ic a double containing the number of components that were estimated
+#'
 #'@references Bai, Jushan, and Serena Ng. 
 #''A PANIC Attack on Unit Roots and Cointegration.'
 #' Econometrica 72.4 (2004): 1127-1177. Print.
+#' 
+#' @export
 #'
 panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
   ###  
   # Begin TESTS
   ###
     is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
-  
+    
   
     Tn <- dim(x)[1]
     N <- dim(x)[2]
     
+    nfac < N || stop(" nfac must be less than the number of series.")
     if (is.null(nfac)){
       warning("nfac is NULL, setting the maximum number of factors equal to the number of columns")
       nfac <- dim(x)[2]
     }
+    
     if (is.null(k1)){
       warning("k1 is NULL, setting k1 equal to  k1 4 * ceiling((T/100)^(1/4))")
       k1 <- 4 * ceiling((dim(x)[1]/100)^(1/4))
+    }
+    if (!(k1 %% 1 == 0)){
+      stop(" k1 must be an integer.")
     }
     if (is.null(criteria)){
       warning("criteria is NULL, setting criteria to BIC3")
@@ -210,6 +233,7 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
                     adff = adfr,
                     k1 = k1,
                     nfac = nfac,
+                    ic = factors$ic,
                     criteria = criteria,
                     func = "panic04")
     

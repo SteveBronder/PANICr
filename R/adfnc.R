@@ -7,5 +7,5 @@
 #'@description A dataset containing critical values for PANIC (2004) idiosyncratic pooled test
 #'
 #'
-#'
+#'@export
 NULL 

@@ -23,21 +23,23 @@ data. If FALSE, uses non-demeanded data generating process.}
 \value{
 rho1 Estimation of the Pooled Autoregressive Coefficient.
 
-Model This function shows MP models A, B, and C. A assumes no deterministic component.
-B assumes a constant and allows for a fixed effect model. C allows a constant
-and trend.
+MP.tests A data frame containing either the test statistics for the Moon and Perron model A and B tests if demeaned = FALSE
+or a data frame containing the test statistics for the pooled tests as well as Moon and Perron's model C
 
-test.A.B A matrix containing t_a, t_b, t_a1, and t_a2.
+PMSB.tests a data frame containing the test statistic for the PMSB test, the rho coefficient, and either the 
+LM test from Bai and Ng (2004) or the ADF test from Bai and Ng (2004)
 
-test.C.P A matrix containing the Pooled tests as well as Model C.
+nfac An integer speciyfing the maximum number of factors allowed
+while estimating the factor model.
 
-extra.test a matrix containing t_c, rho1, adf30b.
-Or a matrix containing t_c, rho1, and the LM test for PANIC (2004)'s
-Idiosyncratic Components.
+k1 an integer that is the maximum lag allowed in the ADF test.
 
-pa-pb Pooled test from PANIC (2010). Null of nonstationarity.
-If both reject conclude stationarity. However, if only one rejects the panel
-is nonstationary.
+criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+ Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
+
+func a character vector representing which function was run
+
+ic a double containing the number of components that were estimated
 
 PMSB Unit root test tends to zero. The unit root hypothesis is rejected
 in favor of stationarity when the PMSB test goes below a critical value.
@@ -49,9 +51,21 @@ moment. The sample moments test is based off of the modified
 Sargan-Bhargava test (MSB). Each test rejects after
 the test statistic goes below the critical value of -1.64.
 }
+\details{
+This function gives results for Moon and Perron tests with models A, B, and C as well as
+the pooled tests from PANIC (2010) and the panel. A assumes no deterministic component.
+B assumes a constant and allows for a fixed effect model. C allows a constant
+and trend. pa-pb Pooled test from PANIC (2010). Null of nonstationarity.
+If both reject conclude stationarity. However, if only one rejects the panel
+is nonstationary.
+}
 \references{
 Bai, Jushan, and Serena Ng.
 'Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation.'
 Econometric Theory 26.04 (2010): 1088-1114. Print.
+
+Bai, Jushan, and Serena Ng. 
+'A PANIC Attack on Unit Roots and Cointegration.'
+Econometrica 72.4 (2004): 1127-1177. Print.
 }
 
