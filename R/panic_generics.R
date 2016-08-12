@@ -1,6 +1,4 @@
-#'@title Summary function for panic objects
-#'
-#'@description Summarizes outputs and gives significance for the panic object
+
 #'@export
 summary.panic <- function(object,...){
   
@@ -107,9 +105,7 @@ summary.panic <- function(object,...){
     }
 }
 
-#'@title Print summary statements for panic
-#'
-#'@description prints the summary of a panic object
+
 #'@export
 print.summary.panic <- function(x,...){
   
@@ -156,7 +152,7 @@ print.summary.panic <- function(x,...){
       }
 }
 
-#
+
 .get_sig <- function(pvals,ans){
   
   sigs <- lapply(ans,
