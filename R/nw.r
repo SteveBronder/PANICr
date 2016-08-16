@@ -21,56 +21,54 @@
 #'
 
 nw <- function(v, fixk) {
+  
+  Tn <- length(v)
+  
+  rho <- NULL
+  
+  sigma <- NULL
+  
+  if (fixk == 0) {
+    # auto bandwidth selection
     
-    Tn <- dim(v)[1]
+    bot <- 0
     
-    nreg <- dim(v)[2]
+    top <- 0
     
-    rho <- NULL
+ 
+    rho <- qr.solve(v[1:I(Tn - 1)], v[2:Tn])
+      
+    e <- v[2:Tn] - rho[1] * v[1:I(Tn - 1)]
+      
+    sigma <- crossprod(e)/(Tn - 1)
+      
+    top <- top + 4 * (rho^2) * (sigma^2)/(((1 - rho)^6) * (1 + rho)^2)
+      
+    bot <- bot + (sigma^2)/((1 - rho)^4)
     
-    sigma <- NULL
     
-    if (fixk == 0) {
-        # auto bandwidth selection
-        
-        bot <- 0
-        
-        top <- 0
-        
-        for (i in 1:nreg) {
-            rho[i] <- qr.solve(v[1:I(Tn - 1), i], v[2:Tn, i])
-            
-            e <- v[2:Tn, i] - rho[i] * v[1:I(Tn - 1), i]
-            
-            sigma[i] <- crossprod(e)/(Tn - 1)
-            
-            top <- top + 4 * (rho[i]^2) * (sigma[i]^2)/(((1 - rho[i])^6) * (1 + rho[i])^2)
-            
-            bot <- bot + (sigma[i]^2)/((1 - rho[i])^4)
-        }
-        
-        alpha <- top/bot
-        
-        k <- ceiling(1.1447 * (alpha * Tn)^(1/3))
-        # Trying Something
-        if (k > I(Tn)) {
-            k = Tn-2
-        }
-    } else {
-        
-        k <- fixk
+    alpha <- top/bot
+    
+    k <- ceiling(1.1447 * (alpha * Tn)^(1/3))
+    # Trying Something
+    if (k > I(Tn)) {
+      k = Tn-2
     }
+  } else {
     
-    w <- matrix(0, k, 1)
+    k <- fixk
+  }
+  
+  w <- matrix(0, k, 1)
+  
+  for (i in 1:k) {
     
-    for (i in 1:k) {
-        
-        x <- i/k
-        
-        w[i] <- 1 - i/(k + 1)
-    }
+    x <- i/k
     
-    
-    output <- list(k = k, w = w)
-    return(output)
+    w[i] <- 1 - i/(k + 1)
+  }
+  
+  
+  output <- list(k = k, w = w)
+  return(output)
 } 

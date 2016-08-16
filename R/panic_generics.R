@@ -39,7 +39,7 @@ summary.panic <- function(object,...){
     mp_testa_fig <- paste0("< ", mp_testa_p$p_val," ", mp_testa_p$sign)
     mp_testb_fig <- paste0("< ", mp_testb_p$p_val," ", mp_testb_p$sign)
     
-    pmsb_p <- .get_sig(ehat_pvals,object$PAC.tests$PMSB)
+    pmsb_p <- .get_sig(ehat_pvals,object$PMSB.tests$PMSB)
     pmsb_fig <- paste0("< ", pmsb_p$p_val," ", pmsb_p$sign)
     
     mp_test_a <- data.frame(Tests = c("ta","tb"),
@@ -51,7 +51,7 @@ summary.panic <- function(object,...){
                             Signif = mp_testb_fig)
     
     pmsb_test <- data.frame(Tests = "PMSB",
-                            Results = object$PAC.tests$PMSB,
+                            Results = object$PMSB.tests$PMSB,
                             Signif = pmsb_fig)
     
     summary_results <- list(mp_test_a = mp_test_a,
@@ -75,7 +75,7 @@ summary.panic <- function(object,...){
     pool_test_fig <- paste0("< ", pool_test_p$p_val," ", pool_test_p$sign)
     mp_testc_fig <- paste0("< ", mp_testc_p$p_val," ", mp_testc_p$sign)
     
-    pmsb_p <- .get_sig(ehat_pvals,object$PAC.tests$PMSB)
+    pmsb_p <- .get_sig(ehat_pvals,object$PMSB.tests$PMSB)
     pmsb_fig <- paste0("< ", pmsb_p$p_val," ", pmsb_p$sign)
     
     pool_test <- data.frame(Tests = c("Pa","Pb"),
@@ -87,7 +87,7 @@ summary.panic <- function(object,...){
                             Signif = mp_testc_fig)
     
     pmsb_test <- data.frame(Tests = "PMSB",
-                            Results = object$PAC.tests$PMSB,
+                            Results = object$PMSB.tests$PMSB,
                             Signif = pmsb_fig)
     
     summary_results <- list(pool_test = pool_test,
@@ -111,10 +111,10 @@ print.summary.panic <- function(x,...){
   
   if (x$func == "panic04"){
     cat("\nCommon Components\n")
-    print(format(x$common_ans,trim=TRUE,justify = "left"))
+    print(format(x$common_tests,trim=TRUE,justify = "left"))
     cat("\n---\n")
     cat("\nPooled Tests\n")
-    print(format(x$pooled_ans, trim=TRUE,justify= "left"))
+    print(format(x$pooled_tests, trim=TRUE,justify= "left"))
     cat("\n Signif. codes:  '***' 0.01 '**' 0.025 '*' 0.05 '.' 0.1 ' ' 1\n")
     
     cat(paste0("\n Maximum Number of Factors: ", x$nfac))

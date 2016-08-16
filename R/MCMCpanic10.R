@@ -1,5 +1,3 @@
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("top0", "bottom0","rho0"))
-
 #'@title MCMC PANIC (2010) Sample Moment and PAC tests for Idiosyncratic Component
 #'
 #'@description This function performs the tests of PANIC (2010) with a Monte Carlo
@@ -8,9 +6,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("top0", "bottom0","rho0"
 #' Sargan-Bhargava test (PMSB) while the pooled autoregressive component is based on the
 #' Moon and Perron test as well a biased corrected pooled coefficient from PANIC (2004).
 #'
-#'@usage MCMCpanic10(x, nfac, k1, jj, demean = FALSE, burn = 1000, mcmc = 10000, thin = 10,
-#' verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-#'   a0 = 0.001, b0 = 0.001, std.var = TRUE)
+#'@usage MCMCpanic10(x = NULL, nfac = NULL, k1 = NULL, criteria = NULL,
+#' demean = FALSE, burn = 100, mcmc = 100, thin = 10,
+#' verbose = 0, seed = NA, lambda.start = NA, psi.start = NA,
+#'  l0 = 0, L0 = 0, a0 = 0.001, b0 = 0.001, std.var = TRUE,...)
 #'
 #'
 #'@param x An object of class xts holding the time series data
@@ -55,6 +54,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("top0", "bottom0","rho0"
 #'@param std.var if TRUE the variables are rescaled to have zero mean and unit variance.
 #' Otherwise, the variables are rescaled to have zero mean, but retain their observed variances
 #' 
+#'@param ... extra parameters to be passed to MCMCfactanal
+#'
 #'@return adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
 #' will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B, 
 #' PMSB, and rho. All tests are degenerative and have a critical value of -1.64. 
@@ -116,297 +117,306 @@ MCMCpanic10 <- function(x = NULL,
   ## END: TESTS
   #########
   
+  
+  if (demean == FALSE) {
+    x_diff <- diff(x, 1)[2:nrow(x),]
     
-    if (demean == FALSE) {
-        x_diff <- diff(x, 1)[2:nrow(x),]
+    Tn <- dim(x_diff)[1]
+    N <- dim(x_diff)[2]
+    
+    # test nfac < N
+    nfac < N || stop(" nfac must be less than the number of series.")
+    
+    scaler <- sqrt(N) * Tn
+    
+    factors <- getnfac(x_diff, nfac, criteria)
+    
+    ic <- factors$ic
+    
+    fac.test <- MCMCpack::MCMCfactanal(~.,
+                                       factors = ic,
+                                       data = as.data.frame(x_diff),
+                                       burnin = burn,
+                                       mcmc = mcmc,
+                                       thin = thin,
+                                       verbose = verbose,
+                                       seed = seed,
+                                       lambda.start = lambda.start,
+                                       psi.start = psi.start,
+                                       l0 = l0,
+                                       L0 = L0,
+                                       a0 = a0,
+                                       b0 = b0,
+                                       store.scores = TRUE,
+                                       std.var = std.var)
+    A1 <- 2
+    B1 <- 1
+    U1 <- (1/2)
+    V1 <- (1/3)
+    one <- matrix(1, I(Tn - 1), 1)
+    
+    Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
+    
+    
+    A2 <- 3
+    B2 <- 2
+    
+    output_list <- lapply(1:I(mcmc/thin), function(i){
       
-        Tn <- dim(x_diff)[1]
-        N <- dim(x_diff)[2]
+      lamhat <- matrix(fac.test[i, 1:I(N * ic)], N, ic)
       
-        # test nfac < N
-        nfac < N || stop(" nfac must be less than the number of series.")
-        
-        scaler <- sqrt(N) * Tn
+      dfhat <- matrix(fac.test[i, I(N * ic + N + 1):I((Tn) * ic + N * ic + N)], I(Tn), ic, byrow = TRUE)
       
-        factors <- getnfac(x_diff, nfac, criteria)
-        
-        ic <- factors$ic
-        
-        fac.test <- MCMCpack::MCMCfactanal(~.,
-                                           factors = ic,
-                                           data = as.data.frame(x_diff),
-                                           burnin = burn,
-                                           mcmc = mcmc,
-                                           thin = thin,
-                                           verbose = verbose,
-                                           seed = seed,
-                                           lambda.start = lambda.start,
-                                           psi.start = psi.start,
-                                           l0 = l0,
-                                           L0 = L0,
-                                           a0 = a0,
-                                           b0 = b0,
-                                           store.scores = TRUE,
-                                           std.var = std.var)
-        A1 <- 2
-        B1 <- 1
-        U1 <- (1/2)
-        V1 <- (1/3)
-        one <- matrix(1, I(Tn - 1), 1)
-        
-        Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
-        
-        
-        A2 <- 3
-        B2 <- 2
-
-        output_list <- lapply(1:I(mcmc/thin), function(i){
-
-            lamhat <- matrix(fac.test[i, 1:I(N * ic)], N, ic)
-            
-            dfhat <- matrix(fac.test[i, I(N * ic + N + 1):I((Tn) * ic + N * ic + N)], I(Tn), ic, byrow = TRUE)
-            
-            dehat <- x_diff - dfhat %*% t(lamhat)
-            
-            ehat0 <- cumsum(dehat)
-            lagehat0 <- lag(ehat0,1)[2:nrow(ehat0),]
-            trim_ehat0 <- ehat0[2:nrow(ehat0),]
-
-            # Do old panic
-            adf30 <- adf(trim_ehat0, k1, -1)
-            Pool <- pool(adfnc, t(adf30))
-            adf30a <- Pool$adf31a
-            adf30b <- Pool$adf31b
-            
-            # Model A compute rho0 (no demeaning)
-            top0 <- sum(sum(lagehat0 * trim_ehat0))
-            bottom0 <- sum(sum(lagehat0 * lagehat0))
-            rho0 <- top0/bottom0
-            res0 <- trim_ehat0 - lagehat0 * rho0
-            
-            # setup nuisance
-            Nuisance <- nuisance(res0, 0)
-            sig2 <- Nuisance$sig2
-            omega2 <- Nuisance$omega2
-            half <- Nuisance$half
-            OMEGA2 <- mean(omega2)
-            PHI4 <- mean(omega2 * omega2)
-            SIG2 <- mean(sig2)
-            HALF <- mean(half)
-            
-            
-            # tests using rho- (do not project on deterministic trends)
-            
-            # setup constants
-            ADJ <- N * Tn * HALF
-            A1 <- 2
-            B1 <- 1
-            U1 <- (1/2)
-            V1 <- (1/3)
-            
-            
-            rho1 <- (top0 - ADJ)/bottom0
-            
-            # P = 0, -1 MP Tests Model A
-            t_a <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
-            t_b <- scaler * (rho1 - 1) * sqrt(bottom0/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
-            
-            # P = 0 , -1 PMSB test
-            t_c <- sum(diag(tcrossprod(trim_ehat0)))
-            t_c <- t_c / (N * Tn^2) - U1 * OMEGA2
-            t_c <- sqrt(N) *  t_c /sqrt(V1 * PHI4)
-            
-            # Model B tests that project on constant
-            
-            one <- matrix(1, I(Tn - 1), 1)
-            Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
-            ehat <- Q_T %*% trim_ehat0
-            lagehat <- Q_T %*% lagehat0
-            
-            top <- sum(sum(lagehat * ehat))
-            bottom <- sum(sum((lagehat * lagehat)[2:nrow(lagehat0),]))
-            rho1 <- top/bottom
-            res1 <- ehat - lagehat * rho1
-            
-            # setup nuisance parameters
-            Nuisance <- nuisance(res1, 0)
-            sig2 <- Nuisance$sig2
-            omega2 <- Nuisance$omega2
-            half <- Nuisance$half
-            OMEGA2 <- mean(omega2)
-            PHI4 <- mean(omega2 * omega2)
-            SIG2 <- mean(sig2)
-            HALF <- mean(half)
-            
-            # setup constants
-            A1 <- 3
-            B1 <- 2
-            ADJ <- -N * Tn * SIG2/2
-            rho1 <- (top - ADJ)/bottom
-            
-            # Model B for P = 0
-            t_a1 <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
-            t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
-            
-            c(t_a,t_b,t_a1,t_a2,t_c,rho1,adf30b)
-        })
-        
-        output <- do.call(rbind,output_list)
-        colnames(output) <- c("model_a_ta", "model_a_tb", "model_b_ta", "model_b_tb", "pmsb", "rho1","pool_adf")
-        output <- coda::as.mcmc(output)
-            
-        
-        
-        return(output)
-        ######################################################### 
-    } else {
-        
+      dehat <- x_diff - tcrossprod(dfhat, lamhat)
       
-        x <- as.matrix(x)
-        
-        x_diff <- trimr(mydiff(x, 1), 1, 0)
-        
-        intdX <- as.matrix(t(apply(x_diff, 2, mean)))
-        
-        repmat <- intdX[rep(seq_len(nrow(intdX)), each = I(nrow(x) - 1)), ]
-        
-        x_diff <- x_diff - repmat
-        
-        Tn <- dim(x_diff)[1]
-        
-        N <- dim(x_diff)[2]
-        
-        scale <- sqrt(N) * Tn
-        
-        factors <- getnfac(x_diff, nfac, jj)
-        
-        ic <- factors$ic
-        
-        fac.test <- MCMCfactanal(~., factors = ic, data = as.data.frame(x_diff), burnin = burn, mcmc = mcmc, thin = thin, verbose = verbose, seed = seed, lambda.start = lambda.start, 
-            psi.start = psi.start, l0 = l0, L0 = L0, a0 = a0, b0 = b0, store.scores = TRUE, std.var = std.var)
-  
-        
-        A1 <- 36/5
-        
-        B1 <- 5/6
-        
-        U1 <- 1/6
-        
-        V1 <- 1/45
-        
-        A2 <- 15/4
-        
-        B2 <- 4
-        one <- cbind(matrix(1, I(Tn - 1), 1), as.matrix(seq(1, I(Tn - 1))))
-        
-        Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
-        
-        lamhat <- NULL
-        dfhat  <- NULL
-        top    <- NULL
-        bottom <- NULL
-        Nuisance <- NULL
-        sig2   <- NULL
-        omega2 <- NULL
-        half   <- NULL
-        OMEGA2 <- NULL
-        PHI4   <- NULL
-        SIG2   <- NULL
-        HALF   <- NULL
-        ADJ    <- NULL
-        t_a    <- NULL
-        t_b    <- NULL
-        t_c    <- NULL
-        t_a1   <- NULL
-        t_a2   <- NULL
-        
-        for (i in 1:I(mcmc/thin)) {
-            lamhat[[i]] <- matrix(fac.test[i, 1:I(N * ic)], N, ic)
-            
-            
-            
-            dfhat[[i]] <- matrix(fac.test[i, I(N * ic + N + 1):I((Tn) * ic + N * ic + N)], I(Tn), ic, byrow = TRUE)
-
-          
-           top[[i]] <- sum(sum(trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1), 1, 0) * trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 
-                2, cumsum), 1, 0)))
-           
-            bottom[[i]] <- sum(sum(trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1), 1, 0) * trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 
-                2, cumsum), 1), 1, 0)))
-            
-            Nuisance[[i]] <- nuisance(trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1, 0) - trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 
-                                                                                                                           1), 1, 0) * (top[[i]]/bottom[[i]]), 0)
-            sig2[[i]] <- Nuisance[[i]]$sig2
-            
-            omega2[[i]] <- Nuisance[[i]]$omega2
-            
-            half[[i]] <- Nuisance[[i]]$half
-            
-            OMEGA2[[i]] <- mean(omega2[[i]])
-            
-            PHI4[[i]] <- mean(omega2[[i]] * omega2[[i]])
-            
-            SIG2[[i]] <- mean(sig2[[i]])
-            
-            HALF[[i]] <- mean(half[[i]])
-            
-        
-        # No longer do detrending
-
-            ADJ[[i]] <- SIG2[[i]]/OMEGA2[[i]]
-            
-            # P = 1 for Pa and Pb
-            t_a[[i]] <- scale * (rho0[[i]] - 1 + ADJ[[i]] * 3/Tn)/sqrt(A1 * PHI4[[i]] * SIG2[[i]]^2/(OMEGA2[[i]]^4))
-            
-            t_b[[i]] <- scale * (rho0[[i]] - 1 + ADJ[[i]] * 3/Tn) * sqrt(bottom0[[i]]/(scale^2)) * sqrt(B1 * (OMEGA2[[i]]^3)/(PHI4[[i]] * (SIG2[[i]]^2)))
-            # P = 1 PMSB
-            t_c[[i]] <- sqrt(N) * (sum(diag(trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1, 0) %*% t(trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 
-                2, cumsum), 1, 0))))/(N * Tn^2) - U1 * OMEGA2[[i]])/sqrt(V1 * PHI4[[i]])
-        
-        # Tests that project on intercept and trends
-
-            top[[i]] <- sum(sum((Q_T %*% trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1),
-                                               1, 0)) * (Q_T %*% trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1, 0))))
-            
-            bottom[[i]] <- sum(sum((Q_T %*% trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1),
-                                                  1, 0)) * (Q_T %*% trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum), 1), 1, 0))))
-            
-            Nuisance[[i]] <- nuisance(( Q_T %*% trimr(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum),
-                                                      1, 0)) - ( Q_T %*% trimr(lagn(apply(x_diff - tcrossprod(dfhat[[i]], lamhat[[i]]), 2, cumsum),
-                                                                                    1), 1, 0)) * (top[[i]]/bottom[[i]]), 0)
-            sig2[[i]] <- Nuisance[[i]]$sig2
-            
-            omega2[[i]] <- Nuisance[[i]]$omega2
-            
-            half[[i]] <- Nuisance[[i]]$half
-            
-            OMEGA2[[i]] <- mean(omega2[[i]])
-            
-            PHI4[[i]] <- mean(omega2[[i]] * omega2[[i]])
-            
-            SIG2[[i]] <- mean(sig2[[i]])
-            
-            HALF[[i]] <- mean(half[[i]])
-  
-            ADJ[[i]] <- -N * Tn * SIG2[[i]]/2
-            
-            rho1[[i]] <- (top[[i]] - ADJ[[i]])/bottom[[i]]
-            # Model C
-            t_a1[[i]] <- scale * (rho1[[i]] - 1)/sqrt(A2 * PHI4[[i]]/(OMEGA2[[i]] * OMEGA2[[i]]))
-            
-            t_a2[[i]] <- scale * (rho1[[i]] - 1) * sqrt(bottom[[i]]/(scale^2)) * sqrt(B2 * OMEGA2[[i]]/PHI4[[i]])
-            
-        }
-        
-        
-        adf.mcmc <- cbind(t_a, t_b, t_a1, t_a2, t_c, rho1)
-        
-        colnames(adf.mcmc) <- c("Pa", "Pb", "Model C ta", "Model C tb", "PMSB", "rho1")
-        
-        output <- list(adf.mcmc = adf.mcmc)
-        
-        
-        return(output)
-        
-    }
+      ehat0 <- cumsum(dehat)
+      lagehat0 <- lag(ehat0,1)[2:nrow(ehat0),]
+      trim_ehat0 <- ehat0[2:nrow(ehat0),]
+      
+      # Do old panic
+      adf30 <- adf(trim_ehat0, k1, -1)
+      Pool <- pool(adfnc, t(adf30))
+      adf30a <- Pool$adf31a
+      adf30b <- Pool$adf31b
+      
+      # Model A compute rho0 (no demeaning)
+      top0 <- sum(sum(lagehat0 * trim_ehat0))
+      bottom0 <- sum(sum(lagehat0 * lagehat0))
+      rho0 <- top0/bottom0
+      res0 <- trim_ehat0 - lagehat0 * rho0
+      
+      # setup nuisance
+      Nuisance <- nuisance(res0, 0)
+      sig2 <- Nuisance$sig2
+      omega2 <- Nuisance$omega2
+      half <- Nuisance$half
+      OMEGA2 <- mean(omega2)
+      PHI4 <- mean(omega2 * omega2)
+      SIG2 <- mean(sig2)
+      HALF <- mean(half)
+      
+      
+      # tests using rho- (do not project on deterministic trends)
+      
+      # setup constants
+      ADJ <- N * Tn * HALF
+      A1 <- 2
+      B1 <- 1
+      U1 <- (1/2)
+      V1 <- (1/3)
+      
+      
+      rho1 <- (top0 - ADJ)/bottom0
+      
+      # P = 0, -1 MP Tests Model A
+      t_a <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+      t_b <- scaler * (rho1 - 1) * sqrt(bottom0/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
+      
+      # P = 0 , -1 PMSB test
+      t_c <- sum(diag(tcrossprod(trim_ehat0)))
+      t_c <- t_c / (N * Tn^2) - U1 * OMEGA2
+      t_c <- sqrt(N) *  t_c /sqrt(V1 * PHI4)
+      
+      # Model B tests that project on constant
+      
+      one <- matrix(1, I(Tn - 1), 1)
+      Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
+      ehat <- Q_T %*% trim_ehat0
+      lagehat <- Q_T %*% lagehat0
+      
+      top <- sum(sum(lagehat * ehat))
+      bottom <- sum(sum((lagehat * lagehat)[2:nrow(lagehat0),]))
+      rho1 <- top/bottom
+      res1 <- ehat - lagehat * rho1
+      
+      # setup nuisance parameters
+      Nuisance <- nuisance(res1, 0)
+      sig2 <- Nuisance$sig2
+      omega2 <- Nuisance$omega2
+      half <- Nuisance$half
+      OMEGA2 <- mean(omega2)
+      PHI4 <- mean(omega2 * omega2)
+      SIG2 <- mean(sig2)
+      HALF <- mean(half)
+      
+      # setup constants
+      A1 <- 3
+      B1 <- 2
+      ADJ <- -N * Tn * SIG2/2
+      rho1 <- (top - ADJ)/bottom
+      
+      # Model B for P = 0
+      t_a1 <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+      t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
+      
+      c(t_a,t_b,t_a1,t_a2,t_c,rho1,adf30b)
+    })
+    
+    output <- do.call(rbind,output_list)
+    colnames(output) <- c("model_a_ta", "model_a_tb", "model_b_ta", "model_b_tb", "pmsb", "rho1","pool_adf")
+    
+    
+    
+    
+    return(output)
+    ######################################################### 
+  } else {
+    
+    
+    # difference and demean
+    x_diff <- diff(x, 1)[2:nrow(x),]
+    x_diff <- scale(x_diff,center = TRUE,scale = FALSE)
+    
+    Tn <- dim(x_diff)[1]
+    N <- dim(x_diff)[2]
+    
+    # test nfac < N
+    nfac < N || stop(" nfac must be less than the number of series.")
+    scaler <- sqrt(N) * Tn
+    
+    scale <- sqrt(N) * Tn
+    
+    factors <- getnfac(x_diff, nfac, criteria)
+    
+    ic <- factors$ic
+    
+    fac.test <- MCMCfactanal(~., factors = ic,
+                             data = as.data.frame(x_diff),
+                             burnin = burn,
+                             mcmc = mcmc,
+                             thin = thin,
+                             verbose = verbose,
+                             seed = seed,
+                             lambda.start = lambda.start, 
+                             psi.start = psi.start,
+                             l0 = l0,
+                             L0 = L0,
+                             a0 = a0,
+                             b0 = b0,
+                             store.scores = TRUE,
+                             std.var = std.var)
+    
+    
+    A1 <- 36/5
+    B1 <- 5/6
+    U1 <- 1/6
+    V1 <- 1/45
+    A2 <- 15/4
+    B2 <- 4
+    one <- cbind(matrix(1, I(Tn - 1), 1), as.matrix(seq(1, I(Tn - 1))))
+    
+    Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
+    
+    
+    output_list <- lapply(1:(mcmc/thin), function(i) {
+      
+      lamhat <- matrix(fac.test[i, 1:I(N * ic)], N, ic)
+      
+      dfhat <- matrix(fac.test[i, I(N * ic + N + 1):I((Tn) * ic + N * ic + N)], I(Tn), ic, byrow = TRUE)
+      
+      dehat <- x_diff - tcrossprod(dfhat, lamhat)
+      
+      ehat0 <- cumsum(dehat)
+      lagehat0 <- lag(ehat0,1)[2:nrow(ehat0),]
+      trim_ehat0 <- ehat0[2:nrow(ehat0),]
+      
+      
+      # Do old panic
+      
+      adf31 <- adf(trim_ehat0, k1, -1)
+      Pool <- pool(lm1, t(adf31))
+      adf31a <- Pool$adf31a
+      adf31b <- Pool$adf31b
+      
+      # set up for nuisance parameters
+      bottom0 <- sum(sum(lagehat0 * lagehat0))
+      top0 <- sum(sum(lagehat0 * trim_ehat0))
+      rho0 <- top0/bottom0
+      res0 <- trim_ehat0 - lagehat0 * rho0
+      
+      # Find nuisance parameters
+      Nuisance <- nuisance(res0, 0)
+      sig2 <- Nuisance$sig2
+      omega2 <- Nuisance$omega2
+      half <- Nuisance$half
+      OMEGA2 <- mean(omega2)
+      PHI4 <- mean(omega2 * omega2)
+      SIG2 <- mean(sig2)
+      HALF <- mean(half)
+      
+      
+      # No longer do detrending
+      
+      ADJ <- SIG2/OMEGA2
+      A1 <- 36/5
+      B1 <- 5/6
+      U1 <- 1/6
+      V1 <- 1/45
+      
+      
+      # P = 1 for Pa and Pb
+      t_a <- scaler * (rho0 - 1 + ADJ * 3/Tn)
+      t_a <- t_a /sqrt(A1 * PHI4 * SIG2^2/(OMEGA2^4))
+      
+      t_b <- scaler * (rho0 - 1 + ADJ * 3/Tn) 
+      t_b <- t_b * sqrt(bottom0/(scaler^2)) 
+      t_b <- t_b * sqrt(B1 * (OMEGA2^3)/(PHI4 * (SIG2^2)))
+      
+      
+      # P = 1 PMSB
+      t_c <- sum(diag(tcrossprod(trim_ehat0)))
+      t_c <- t_c / (N * Tn^2)
+      t_c <- t_c - U1 * OMEGA2
+      t_c <- sqrt(N) * t_c / sqrt(V1 * PHI4)
+      
+      # Tests that project on intercept and trends
+      one <- matrix(data = c(rep(1,I(Tn-1)),
+                             seq(1,I(Tn-1))),
+                    nrow = (Tn-1),
+                    ncol = 2)
+      
+      Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
+      
+      ehat <- Q_T %*% trim_ehat0
+      lagehat <- Q_T %*% lagehat0
+      
+      # setup for nuisance controls
+      top <- sum(sum(lagehat * ehat))
+      bottom <- sum(sum(lagehat * lagehat))
+      rho1 <- (top)/bottom
+      res1 <- ehat - lagehat * rho1
+      Nuisance <- nuisance(res1, 0)
+      
+      sig2 <- Nuisance$sig2
+      omega2 <- Nuisance$omega2
+      half <- Nuisance$half
+      OMEGA2 <- mean(omega2)
+      PHI4 <- mean(omega2 * omega2)
+      SIG2 <- mean(sig2)
+      HALF <- mean(half)
+      
+      # setup constants
+      A1 <- 15/4
+      B1 <- 4
+      ADJ <- -N * Tn * SIG2/2
+      rho1 <- (top - ADJ)/bottom
+      
+      # Model C
+      t_a1 <- scaler * (rho1 - 1)/sqrt(A1 * PHI4/(OMEGA2 * OMEGA2))
+      
+      t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
+      
+      c(t_a, t_b, t_c, t_a1, t_a2, rho1)
+    })
+    
+    output <- do.call(rbind,output_list)
+    
+    colnames(output) <- c("Pa", "Pb","PMSB", "Model C ta", "Model C tb",  "rho1")
+    
+    output <- coda::as.mcmc(output)
+    
+    
+    return(output)
+    
+  }
 } 

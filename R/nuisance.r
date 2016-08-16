@@ -10,6 +10,8 @@
 #'@param k If fixk is 0, then automatic bandwidth selection is performed.
 #' Otherwise, the integer placed here will be the selected bandwidth.
 #'
+#'@return A data frame containing the following columns
+#'
 #'@return sig2 The vector of short run variances
 #'
 #'@return omega2 The vector of long run variances
@@ -19,40 +21,37 @@
 #'@export
 
 nuisance <- function(res, k) {
+  
+  # convert to data frame so that vectors are treated as vectors instead of lists of numbers
+  # TODO: Have an if test, if vector, do not use lapply
+  nw_output<- lapply(as.data.frame(res),function(x){
     
-    Tn <- dim(res)[1]
+    NW <- nw(x, k)
     
-    N <- dim(res)[2]
-    omega2 <- matrix(0, N, 1)
+    Tn <- length(x)
+    K <- NW$k
     
-    sig2 <- matrix(0, N, 1)
+    Kw <- NW$w
     
-    half <- matrix(0, N, 1)
+    sig2 = crossprod(x)/Tn
     
-    for (i in 1:N) {
-        
-        NW <- nw(as.matrix(res[, i]), k)
-        
-        K <- NW$k
-        
-        Kw <- NW$w
-        
-        sig2[i] = crossprod(res[, i])/Tn
-        
-        omega2[i] <- sig2[i]
-        
-        half[i] = 0
-        
-        for (j in 1:K) {
-            temp <- t(res[1:I(Tn - j - 1), i]) %*% res[I(j + 1):I(Tn - 1), i]/Tn
-            
-            omega2[i] <- omega2[i] + 2 * Kw[j] * temp
-            
-            half[i] <- half[i] + Kw[j] * temp
-        }
+    omega2 <- sig2
+    
+    half = 0
+    
+    for (j in 1:K) {
+      temp <- t(x[1:I(Tn - j - 1)]) %*% x[I(j + 1):I(Tn - 1)]/Tn
+      
+      omega2 <- omega2 + 2 * Kw[j] * temp
+      
+      half <- half + Kw[j] * temp
     }
-    
-    output = list(sig2 = sig2, omega2 = omega2, half = half)
-    return(output)
-    
+    c(sig2,omega2,half)
+  })
+  
+  output <- data.frame(do.call(rbind,nw_output))
+  
+  colnames(output) <- c("sig2","omega2","half")
+  
+  return(output)
 } 

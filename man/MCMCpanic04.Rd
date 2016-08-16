@@ -6,7 +6,7 @@
 \usage{
 MCMCpanic04(x, nfac, k1, jj,burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
 seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
-a0 = 0.001, b0 = 0.001, std.var = TRUE)
+a0 = 0.001, b0 = 0.001, std.var = TRUE,...)
 }
 \arguments{
 \item{x}{A NxT matrix containing the data}
@@ -49,6 +49,8 @@ of the independent Normal prior on the factor loadings.}
 
 \item{std.var}{if TRUE the variables are rescaled to have zero mean and unit variance.
 Otherwise, the variables are rescaled to have zero mean, but retain their observed variances}
+
+\item{...}{extra parameters to pass to MCMCfactanal}
 }
 \value{
 adf.mcmc A list of the MCMC samples of the test statistics. Returns the test statistics

@@ -13,6 +13,8 @@ nuisance(res,k)
 Otherwise, the integer placed here will be the selected bandwidth.}
 }
 \value{
+A data frame containing the following columns
+
 sig2 The vector of short run variances
 
 omega2 The vector of long run variances

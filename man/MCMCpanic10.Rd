@@ -4,22 +4,21 @@
 \alias{MCMCpanic10}
 \title{MCMC PANIC (2010) Sample Moment and PAC tests for Idiosyncratic Component}
 \usage{
-MCMCpanic10(x, nfac, k1, jj, demean = FALSE, burn = 1000, mcmc = 10000, thin = 10,
-verbose = 0, seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0,
-  a0 = 0.001, b0 = 0.001, std.var = TRUE)
+MCMCpanic10(x = NULL, nfac = NULL, k1 = NULL, criteria = NULL,
+demean = FALSE, burn = 100, mcmc = 100, thin = 10,
+verbose = 0, seed = NA, lambda.start = NA, psi.start = NA,
+ l0 = 0, L0 = 0, a0 = 0.001, b0 = 0.001, std.var = TRUE,...)
 }
 \arguments{
-\item{x}{A NxT matrix containing the data}
+\item{x}{An object of class xts holding the time series data}
 
-\item{nfac}{An integer specifying the maximum number of factors allowed
+\item{nfac}{An integer speciyfing the maximum number of factors allowed
 while estimating the factor model.}
 
-\item{k1}{The maximum lag allowed in the ADF test.}
+\item{k1}{an Integer that is the maximum lag allowed in the ADF test.}
 
-\item{jj}{an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
-IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
-makes the number of factors equal to the number of columns whose sum of
-eigenvalues is less than  or equal to .5.}
+\item{criteria}{a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.}
 
 \item{demean}{logical argument. If TRUE, function performs tests on demeaned
 data. If FALSE, uses non-demeanded data generating process.}
@@ -52,6 +51,8 @@ of the independent Normal prior on the factor loadings.}
 
 \item{std.var}{if TRUE the variables are rescaled to have zero mean and unit variance.
 Otherwise, the variables are rescaled to have zero mean, but retain their observed variances}
+
+\item{...}{extra parameters to be passed to MCMCfactanal}
 }
 \value{
 adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc

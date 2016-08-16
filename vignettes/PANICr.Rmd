@@ -55,27 +55,32 @@ agg1.04 <- panic04(NIPA_agg_9, nfac = 100,k1 = 7,criteria = "BIC3")
 
 `panic04()` returns a lot, but we will focus on the pooled tests and the test on the common components.
 ```{r,echo=FALSE,results='asis'}
-knitr::kable(agg1.04[[2]])
-
+output_1 <- summary(agg1.04)
+knitr::kable(output_1$common_tests)
+knitr::kable(output_1$pooled_tests)
 ```
 
 
 ```{r}
-agg1.10.d <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = TRUE)
+#agg1.10.d <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = TRUE)
 ```
 
 ```{r,echo=FALSE,results='asis'}
-knitr::kable(agg1.10.d[[1]])
-knitr::kable(agg1.10.d[[2]])
+#output_10_d <- summary(agg1.10.d)
+#knitr::kable(output_10_d$pool_test)
+#knitr::kable(output_10_d$mp_test_c)
+#knitr::kable(output_10_d$pmsb_test)
 ```
 
 ```{r}
-agg1.10.nd <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = FALSE)
+#agg1.10.nd <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = FALSE)
 ```
 
 ```{r,echo=FALSE,results='asis'}
-knitr::kable(agg1.10.nd[[1]])
-knitr::kable(agg1.10.nd[[2]])
+#output_10_nd <- summary(agg1.10.nd)
+#knitr::kable(output_10_nd$mp_test_a)
+#knitr::kable(output_10_nd$mp_test_b)
+#knitr::kable(output_10_nd$pmsb_test)
 ```
 
 
