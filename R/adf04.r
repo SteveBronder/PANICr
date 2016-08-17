@@ -18,63 +18,71 @@
 #'
 #'@export
 
+
 adf04 <- function(y, k, p) {
+  
+  #####
+  ## TODO:
+  ##   1. Allow this function to retain the xts properties
+  ##   2. Remove loop
+  ##     - Aug 17th, 2016: I tried using lapply, but does not work with xts
+  ##       Also could not replicate results within tolerance
+  #####
+  y <- as.matrix(y)
+  
+  bigt <- dim(y)[1]
+  
+  bign <- dim(y)[2]
+  
+  pval <- matrix(0, 1, bign)
+  
+  tstat <- matrix(0, 1, bign)
+  
+  constant <- matrix(1, I(bigt - 1), 1)
+  
+  trend <- t(seq(1:I(bigt - 1)))
+  
+  for (i in 1:bign) {
     
-    y <- as.matrix(y)
+    dy <- y[2:bigt, i] - y[1:I(bigt - 1), i]
     
-    bigt <- dim(y)[1]
+    reg <- y[1:I(bigt - 1), i]
     
-    bign <- dim(y)[2]
-    
-    pval <- matrix(0, 1, bign)
-    
-    tstat <- matrix(0, 1, bign)
-    
-    constant <- matrix(1, I(bigt - 1), 1)
-    
-    trend <- t(seq(1:I(bigt - 1)))
-    
-    for (i in 1:bign) {
-        
-        dy <- y[2:bigt, i] - y[1:I(bigt - 1), i]
-        
-        reg <- y[1:I(bigt - 1), i]
-        
-        for (j in 1:k) {
-            
-            reg <- cbind(reg, lagn(dy, j))
-        }
-        
-        if (p == 0) {
-            
-            reg <- cbind(reg, constant)
-            
-        }
-        
-        if (p == 1) {
-            
-            reg <- cbind(reg, constant, t(trend))
-            
-        }
-        
-        if (k > 0) {
-            
-            reg <- trimr(reg, k, 0)
-            
-            dy <- trimr(dy, k, 0)
-            
-        }
-        
-        alpha <- qr.solve(reg, dy)
-        
-        e <- dy - reg %*% alpha
-        
-        sig2 <- t(e) %*% e/nrow(as.matrix(dy))
-        
-        xx <- solve(t(reg) %*% reg)
-        
-        tstat[i] <- alpha[1]/sqrt(sig2 * xx[1, 1])
-        
+    for (j in 1:k) {
+      
+      reg <- cbind(reg, lagn(dy, j))
     }
-    return(tstat)
+    
+    if (p == 0) {
+      
+      reg <- cbind(reg, constant)
+      
+    }
+    
+    if (p == 1) {
+      
+      reg <- cbind(reg, constant, t(trend))
+      
+    }
+    
+    if (k > 0) {
+      
+      reg <- trimr(reg, k, 0)
+      
+      dy <- trimr(dy, k, 0)
+      
+    }
+    
+    alpha <- qr.solve(reg, dy)
+    
+    e <- dy - reg %*% alpha
+    
+    sig2 <- t(e) %*% e/nrow(as.matrix(dy))
+    
+    xx <- solve(t(reg) %*% reg)
+    
+    tstat[i] <- alpha[1]/sqrt(sig2 * xx[1, 1])
+    
+  }
+  return(tstat)
 } 

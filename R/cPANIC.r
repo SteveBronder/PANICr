@@ -144,6 +144,7 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
     PC$lambda <- as.matrix(PC$lambda)
     
     # common components wrt factor scores and cumsum factor scores
+    # TODO: vectorize, but it's not much faster
     for (i in 1:N) {
         
         fit1[, i] <- fhat0 %*% PC$lambda[i, ]
