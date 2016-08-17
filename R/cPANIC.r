@@ -109,9 +109,13 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
     
     # Pg. 1133 Bai and Ng (2004)
     # Take cumulative sum of common factors by column
-    fhat0 <- apply(PC$fhat, 2, cumsum)
+    fhat0 <- reclass(PC$fhat, match.to = x_diff)
+    fhat0 <- cumsum(fhat0)
+    
+    #fhat0 <- apply(PC$fhat, 2, cumsum)
     # cum sum of errors of PC by column
-    ehat0 <- apply(dehat, 2, cumsum)
+    ehat0 <- cumsum(dehat)
+    #ehat0 <- apply(dehat, 2, cumsum)
     
     # Set up matrices for 
     # 1. Idiosyncratic components
@@ -122,12 +126,10 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
     beta1 <- matrix(0, I(factors$ic + 1), N)
     
     # Do regressions for each idiosync component
-    ## TODO: use lapply?
-    for (i in 1:N) {
-        
-        beta1[, i] <- qr.solve(reg, x_trim[, i])
-        ehat1[, i] <- x_trim[, i] - reg %*% beta1[, i]
-    }
+
+    beta1 <- qr.solve(reg,x_trim)
+    ehat1 <- x_trim - reg %*% beta1
+
     
     
     # Allocate mem
