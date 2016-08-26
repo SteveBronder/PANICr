@@ -7,16 +7,16 @@
 poolcoint(a,x,r)
 }
 \arguments{
-\item{a}{A supplied matrix containg the containing p values}
+\item{a}{A matrix containg the p values}
 
-\item{x}{The adf test to be pooled}
+\item{x}{A matrix containing the adf test to be pooled}
 
-\item{r}{The number of factors determined by getnfac()}
+\item{r}{An integer for the number of factors determined by getnfac()}
 }
 \value{
-pvala a P-value for the pooled cointegration test
+pvala a numeric vector of the fisher sum of the p-values for the cointegration test
 
-pvalb a P-value for the pooled cointegration test
+pvalb a numeric vector containing the critical value of the cointegration test
 }
 \description{
 This function find the P values for the pooled cointegration test in PANIC (2010)

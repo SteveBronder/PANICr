@@ -4,12 +4,12 @@
 #'
 #'@usage glsd(y,p)
 #'
-#'@param y The dataframe to be detreneded
+#'@param y A matrix containing the data to be detrended
 #'
-#'@param p an binary input of 0 or 1 which decides value of penalty chat of either -7
-#' or -13.5, respectively
+#'@param p An integer with value of either 0 or 1 which decides the value of the penalty term, chat.
+#' This is either either -7 or -13.5, respectively
 #'
-#'@return yt The data detrended
+#'@return yt A matrix of the detrended data
 #'
 #'@export
 glsd <- function(y, p) {

@@ -5,13 +5,13 @@
 #'
 #'@usage adf04(y,k,p)
 #'
-#'@param y NxT matrix of data.
+#'@param y A matrix containing the data.
 #'
 #'@param k An integer specifying the maximum lag order for individual
 #' ADF regressions. Bai and Ng (2004) suggest 4*(Time/100)^(.25) rounded
 #' to the nearest whole number as the maximum number of lags.
 #'
-#'@param p A binary selection for 0 or 1. p is the order of the determinisitic
+#'@param p An integer of value either 0 or 1. p is the order of the determinisitic
 #' function in the regression. 0 is for constant only and 1 is to include a trend.
 #'
 #'@return tstat A vector of t statistics for each column of the input matrix

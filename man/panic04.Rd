@@ -7,44 +7,43 @@
 panic04(x, nfac, k1, criteria)
 }
 \arguments{
-\item{x}{An object of class xts holding the time series data}
+\item{x}{An object of class xts with each column being a time series}
 
 \item{nfac}{An integer speciyfing the maximum number of factors allowed
 while estimating the factor model.}
 
-\item{k1}{an Integer that is the maximum lag allowed in the ADF test.}
+\item{k1}{an integer that is the maximum lag allowed in the ADF test.}
 
-\item{criteria}{a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+\item{criteria}{a character vector of length one with a value of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.}
 }
 \value{
-pool_adf A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
- and detrended critical values ,R squared for principle component
- , and the significance of the error components.
-
-adf.ind A data frame containing the critical values for the pooled Demeaned ADF test, the
-pooled ADF test on the common components, the pooled demeaned ADF test on the
-Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
-Idiosyncratic component.
-
-adff A matrix containing summary information for the tests made on each series.
+pooladf A data frame containing the pooled tests for the demeaned data,
+idiosyncratic component, and the cointegration test. The first row is Fisher's method applied to
+the p values of the respective test. The second row is the correction from PANIC (2004) applied to
+the first row.
 
 Common A data frame of the test results on the common component
 
-nfac An integer speciyfing the maximum number of factors allowed
+adff A data frame containing pooled demeaned critical values,
+demeaned error term critical values, demeaned
+and detrended critical values, R squared for principle component,
+and the significance of the error components.
+
+nfac An integer specifying the maximum number of factors allowed
 while estimating the factor model.
 
-k1 an integer that is the maximum lag allowed in the ADF test.
+k1 An integer that is the maximum lag allowed in the ADF test.
 
-criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+criteria A character vector with a value of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 
-func a character vector representing which function was run
+func A character vector representing which function was run
 
-ic a double containing the number of components that were estimated
+ic A numeric vector containing the number of components that were estimated
 }
 \description{
-This function performs the pooled tests on the idiosyncratic and common component from PANIC (2004).
+Performs the tests on the idiosyncratic and common component from PANIC (2004).
 }
 \references{
 Bai, Jushan, and Serena Ng. 

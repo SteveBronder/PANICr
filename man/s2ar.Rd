@@ -7,17 +7,17 @@
 s2ar(yts, penalty, kmax, kmin)
 }
 \arguments{
-\item{yts}{A NxT matrix containing the data to find kstar for.}
+\item{yts}{A matrix containing the data to find kstar for.}
 
 \item{penalty}{a binary selection of 0 or 1. 0 uses the MAIC, a penalty on
 k that accounts for the bias in the sum of the autoregressive coefficients.
  1 uses the more general form MIC.}
 
-\item{kmax}{The maximum number of lags for the vector autoregressions. An
+\item{kmax}{An integer of the maximum number of lags for the vector autoregressions. An
 upper bound of \code{(12x(T/100)^.25)^8} is suggested
 in Schwert (1989)}
 
-\item{kmin}{The minimum number of lags for the vector autoregression. k equal to 0
+\item{kmin}{An integer of the minimum number of lags for the vector autoregression. k equal to 0
 is a reasonable point.}
 }
 \value{

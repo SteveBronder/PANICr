@@ -9,78 +9,174 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+Often in time series it is important to to test if either
 
-The purpose of this package is to perform the Panel Analysis of Nonstationarity in Idiosyncratic and Common Components from Bai and Ng (2004,2010). When working with large dimensional panels, standard pooled and aggregated nonstationarity tests tend to over-reject null hypothesis due to:
+1. The mean of the series exists
+2. The variance of the series goes off to infinity over time
 
-1. Curse of dimensionality
-2. Cross-Correlation in panel structure
-3. Weak strength to Large N or large T
 
-Instead of testing the data directly, PANIC performs a factor model to derive the common and idiosyncratic components. By using the BIC3 from Bai and Ng (2004) it is possible to determine the number of common components that will reduce cross correlation in the error term. In this vignette we will perform PANIC on the most disaggregate data in the National Income and Product Accounts.
+For univariate time series the standard test for (1) is the Augmented Dicky-Fuller (ADF) and for (2) the  Kwiatkowski–Phillips–Schmidt–Shin (KPSS). The ADF test has a null hypothesis on non-convergence with an alternative of convergence. The KPSS test has a null hypothesis of divergence with an alternative of non-divergence.  When testing large dimensional panels for hypothesis (1) or (2), standard pooling and aggregation of these nonstationarity tests tend to over-reject the null hypothesis due to:
 
-## Vignette Info
+1. The Curse of dimensionality
+2. High amounts of cross-correlation in the panel structure
+3. Weak strength of the tests for Large numbers of observations or series
 
-This vignette will use the functions `panic10()` and `panic04()` availabe through `library(PANICr)`. These functions perform a factor model on an xts object, derive the common and idiosyncratic components, and then perform several pooled test statistics. By reducing cross-correlation we allow valid pooling of individual statistics so that each test will have reasonable power. Examining nonstationarity in the common and idiosyncratic components allows for studying into whether the nonstationarity is pervasive, variable specific, or both.
+The underlying problem is that many of these methods are dependent on using Fisher's method for a combined probability test. However, as the dimensions of a large panel grow, the data is unlikely to follow the Fisher's method independent test assumption. In order to build valid pooled and aggregated tests it would be nice if we could manipulate the series in such a way that the independent test assumption is valid. The purpose of this package is to perform the Panel Analysis of Nonstationarity in the Idiosyncratic and Common Components from Bai and Ng (2004,2010). Instead of testing the data directly, PANIC performs a factor model to derive the uncorrelated common components and mostly independent idiosyncratic components. By using the information criteria from Bai and Ng (2002) it is possible to determine the number of common components that will reduce cross correlation in the common components and increase independence in the idiosyncratic components. This approach allows us to retain the independent test assumption of Fisher's method and produce valid pooled and aggregated tests. In this vignette we will perform PANIC on the most disaggregate data in the National Income and Product Accounts to test whether unit roots exist throughout the panel, in the common components, or if unit roots exist in individual series, the idiosyncratic components.
 
-## Data
-
-The data we use is gathered from the [Price Indexes for Personal Consumption Expenditures by Type of Product](http://www.bea.gov/iTable/iTableHtml.cfm?reqid=12&step=3&isuri=1&1203=16) available from the BEA. The data is monthly from 1959 to 2016^[ T = 689].  To turn this dataset into year on year inflation we perform $log(p_{t}/p_{t-12})$. The data is available already cleaned and manipulated as `NIPA_agg_9`
 
 ## Model
 
 Consider a factor analytic model:
 
-$X_{it} = D_{it} + \lambda_{i}' F_{t} + e_{it}$
+\begin{align}
+X_{it} = D_{it} + \lambda_{i}' F_{t} + e_{it}
+\end{align}
 
-Where $D_{it}$ is a polynomial trend function, $F_{t}$ is an $r\times{1}$ vector of common factors, and $\lambda_{i}$ is a vector of factor loadings. The panel $X_{it}$ is the sum of a deterministic component $D_{it}$ , a common component $\lambda_{i}' F_{t}$, and an error $e_{it}$ that is largely idiosyncratic. A factor model with $N$ variables has $N$ idiosyncratic components, but a smaller number of common factors. $D_{it}$ can be modeled by $P$. In PANIC 2004, When the number of common factors is greater than one, $P=1$ and the deterministic trend has an individual specific fixed effect and time trend. When the number of common factors is equal to one, $P=0$ is an individual specific fixed effect. When the number of common factors is zero, $P=0$ is neither. 
+Where $D_{it}$ is the deterministic component, $F_{t}$ is an $r\times{1}$ vector of common factors, and $\lambda_{i}'$ is a vector of factor loadings. Let the deterministic component be $D_{it} = \sum_{j=0}^{p}\delta_{ij}t^j$. When $p=0$, $D_{it}=\delta_i$ is the individual specific fixed effect, and when $p=1$, an individual specific time trend is also present. When there is no deterministic term, $D_{it}$ is null and $p$ is set equal to $p=-1$. The panel $X_{it}$ is the sum of a deterministic component $D_{it}$ , a common component $\lambda_{i}' F_{t}$, and an error $e_{it}$ that is largely idiosyncratic. A factor model with $N$ variables has $N$ idiosyncratic components, but a smaller number of common factors. 
 
-PANIC 2010 examines the data with ADF models A, B, and C. A assumes no deterministic component, B assumes a constant to allow for a fixed effect, and C allows a constant and a trend. Note that this is different than $P$ as $P$ is a data generating process while Models A, B, and C impose these constraints inside of the ADF test.
+ Gengenbach et al. (2004) shows that the common factors and idiosyncratic component can be analyzed individually because they are independent of on another. This allows for the null of non-convergence for each of the PANIC based tests to be used in both parts of the factor model. In this vignette, the approximate number of factors is determined by the $BIC_{3}$ developed in Bai and Ng (2002), but all the other information criteria developed in Bai and Ng (2002) are also available in the `PANICr` package. This vignette uses the $BIC(3)$ as Bryne and Fiess (2010) point out, the $BIC_{3}$ is more robust to cross-sectional correlation. When using a factor model on data with possible cross-sectional correlation, less common factors are needed to describe the variability in the data than other heuristic methods would prescribe. The $BIC_{3}$ information criteria provides a data driven method to estimate the number of common factors. 
+ 
+ This paper uses an ADF test on the common factor ($ADF_{\hat{F}}^{c}$) and a pooled ADF test on the idiosyncratic individual errors ($ADF_{\hat{e}}^{c}(i)$) developed in Bai and Ng (2004). Where each ADF test is build on an modified vector autoregression, respectively
 
-The benefit of this factor model is that, if the number of factors has been correctly determined, the error term will be largely idosyncratic and the common components will explain the largest variance of the data. To determine the approximate number of factors we use the BIC3 from Bai and Ng (2002) such that:
+\begin{align}
+\Delta\hat{F}_t = c + \delta_0 \hat{F}_{t-1} + \delta_1\Delta\hat{F}_{t-1} + \cdots + \delta_p\Delta\hat{F}_{t-p} + \text{error}
+\end{align}
 
-$BIC3 = V(k,\hat{F}^k)+k\hat{\sigma}^2 + \frac{(N+T-k)ln(NT)}{NT}$
 
-$V(k,\hat{F}^k)$ is the average residual   variance when k factors are assumed for each cross-section unit. $\hat{\sigma}^2$ is the mean of the error term squared over N and T.
+\begin{align}
+\Delta\hat{e}_{it} = d_{i0}\hat{e}_{i t-1} + d_{i1}\Delta\hat{e}_{i t-1} + \cdots + d_{ip}\Delta\hat{e}_{i t-p} + \text{error}
+\end{align}
+ 
+These are run for each $\hat{F}_t$ and $\hat{e}_{it}$ respectively. Since the idiosyncratic component is assumed to be independent, the ADF tests on the idiosyncratic component are assumed to satisfy the independent test assumption of Fisher's method. The idiosyncratic component's pooled test statistic is distributed standard normal as given below
 
-Once we have this model we perform ADF style pooled tests on the idiosyncratic and common components. `panic04()` and `panic10()` ask for `nfac`, the number of estimated factors, `k1`, the maximum lag allowed in the ADF test, and `criteria`, the criteria to determine the number of factors in our approximate factor model. `nfac` is weak to underestimation so it is suggested to overestimate the number of factors.  To determine the lag of the ADF test Bai and Ng (2002) suggest $4(\sqrt{\frac{T}{100}})$. `criteria` is a character vector with a value of either IC(1), IC(2), IC(3), AIC(1), BIC(1), AIC(3), BIC(3), or eigen. Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than or equal to .5. `panic10()` also has the option to run models on demeaned or non-demeaned data (`TRUE` or `FALSE`) which will return models A and B in the first case and C in the second.
+\begin{align}
+P_{\hat{e}}&=\frac{-2\sum^{N}_{i=1}\log{p(i)-2N}}{\sqrt{4N}}\rightarrow{N(0,1)}
+\end{align}
 
-With this information it is now appropriate to start running our tests. We upload the NIPA account data assume there can be at most one hundred factors. The maximum lags are set to seven and the BIC(3) criteria is used to evaluate the number of true factors. 
+The ADF test on the idiosyncratic component has a p-value $p(i)$ for each $i$ cross-section. When these are pooled with the above equation we receive our pooled estimates. The ADF tests on the common and idiosyncratic components have a null hypothesis that each $\alpha, \rho_{i} =1$ against an alternative hypothesis that there exists an $i$ where $\alpha, \rho_{i} < 1$, respectively. This mean that we are testing whether the series is entirely dependent on it's past values or follows a decay scheme. 
 
-```{r, results='asis'}
+This vignette also implements two additional tests from Bai and Ng (2010). The PMSB is based on the modified Sargan-Bhargava test and uses sample moments for the short, long run, and one-sided variance. The bias-corrected version of the pooled test on the idiosyncratic component of Bai and Ng (2010) corrects for bias in the original test on the idiosyncratic component. The short run, long run, one-sided variance, are created as such:
 
+\begin{align}
+\sigma_{\epsilon i}^2=E(\epsilon_{it}^2)=\sum^{\infty}_{j=0}\rho_{ip}^2,\;\;\omega_{\epsilon i}^2=\big(\sum_{j=0}^{\infty}\rho_{ip}\big)^2,\;\;\hat{\phi}_{\epsilon}^{4}&=\frac{1}{N}\sum_{i=1}^{N}(\hat{\omega}_{\epsilon{i}}^{2})^{2}
+\end{align}
+
+Using the short run, long run, and one-sided variance, the PMSB test statistic is defined as the following:
+
+\begin{align}
+PMSB &= \frac{\sqrt{N}(tr(\frac{1}{NT^2}\hat{e}'\hat{e})-\hat{\omega}_{\epsilon}^{2}/6)}{\sqrt{\hat{\phi_{\epsilon}}^4/45}}
+\end{align}
+
+The analysis also implements a bias-corrected version of the pooled test on the idiosyncratic component of Bai and Ng (2004). $P_{a}$ and $P_{b}$ are based on a bias-corrected pooled PANIC auto-regressive parameter $\rho$ and a model in which the deterministic component detrends the data.
+
+\begin{align}
+\hat{\rho}^{+} &= \frac{tr(\hat{e}'_{-1}\hat{e})}{tr(\hat{e}'_{-1}\hat{e}_{-1})} + \frac{3}{T}\frac{\hat{\sigma}_{\epsilon}^2}{\hat{\omega}_{\epsilon}^2}\\
+&= \hat{\rho}+\frac{3}{T}\frac{\hat{\sigma}_{\epsilon}^2}{\hat{\omega}_{\epsilon}^2}
+\end{align}
+
+The left side of the addition on the right side is the original auto-regressive parameter with the bias-correction on the right. The bias-correction makes use of the short run over long run variance and the number of observations. The test statistics are the following:
+
+\begin{align}
+P_a&=\frac{\sqrt{N}T(\hat{\rho}^{+}-1)}{\sqrt{(36/5)\hat{\phi}_{\epsilon}^4\hat{\sigma}_{\epsilon}^4/\hat{\omega}_{\epsilon}^8}}\\
+P_b&=\sqrt{N}T(\hat{\rho}^{+}-1)\sqrt{\frac{1}{NT^2}(tr(\hat{e}'_{-1}\hat{e}_{-1})\frac{5}{6}\frac{\hat{\omega}_{\epsilon}^6}{\hat{\sigma}_{\epsilon}^4\hat{\sigma}_{\epsilon}^4}}
+\end{align}
+
+The null hypothesis of non-convergence is only rejected when both $P_a$ and $P_b$ are both rejected.
+
+In addition to the PANIC models, this package also implements the ADF based models $A$, $B$, and $C$ of Moon and Perron (2004). $A$ assumes no deterministic component, $B$ assumes a constant to allow for a fixed effect, and $C$ allows a constant and a trend. Note that this is different than $P$ as $P$ is a data generating process while Models $A$, $B$, and $C$ impose these constraints inside of the ADF test. Since Moon and Perron's models are based on an ADF test, the null hypothesis is non-convergence and the alternative is that all the series converge. Similar to the pooled tests of PANIC (2010), the models of Moon and Perron are based on two separate test statistics, $t_a$ and $t_b$ where both must go past a critical value else the null hypothesis is not rejected. For a full review of the Moon and Perron tests please see Bai and Ng (2010).
+
+## Example
+
+This vignette will use the functions `panic10()` and `panic04()` available through `library(PANICr)`. These functions perform a factor model on an xts object, derive the common and idiosyncratic components, and then perform several pooled test statistics. By reducing cross-correlation we allow valid pooling of individual statistics so that each test will have reasonable power. Examining nonstationarity in the common and idiosyncratic components allows for studying whether the nonstationarity is pervasive, variable specific, or both.
+
+ `panic04()` and `panic10()` ask for `nfac`, the number of estimated factors, `k1`, the maximum lag allowed in the ADF test, and `criteria`, the criteria to determine the number of factors in our approximate factor model. `nfac` is weak to underestimation so it is suggested to overestimate the number of factors.  To determine the lag of the ADF test Bai and Ng (2002) suggest $4(\frac{T}{100})^{1/4}$. `criteria` is a character vector with a value of either IC(1), IC(2), IC(3), AIC(1), BIC(1), AIC(3), BIC(3), or eigen. Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than or equal to .5. `panic10()` also has the option to run models on demeaned or non-demeaned data which will return model $C$ in the first case and model $A$ and $B$ in the second.
+ 
+## Data
+
+The data we use is gathered from the [Price Indexes for Personal Consumption Expenditures by Type of Product](http://www.bea.gov/iTable/iTableHtml.cfm?reqid=12&step=3&isuri=1&1203=16) available from the BEA. The data is monthly from 1959 to 2016 (T = 678) and covers 232 series ranging from Used Light Weight Trucks to Sugar and sweets.  To turn this dataset into year on year inflation rates we perform $log(p_{t}/p_{t-12})$. The data is available already cleaned and manipulated as `NIPA_agg_9`. To get an idea of what we are working with, below we plot each series together.
+
+```{r,fig.align='center',fig.height=5, fig.width=7}
 library(PANICr)
+library(xts)
 data("NIPA_agg_9")
-agg1.04 <- panic04(NIPA_agg_9, nfac = 100,k1 = 7,criteria = "BIC3")
+NIPA_agg_9_zoo <- as.zoo(NIPA_agg_9)
+
+tsRainbow <- rainbow(ncol(NIPA_agg_9))
+plot(x = NIPA_agg_9_zoo,ylab = " Inflation Rate", xlab = "Years",
+     main = "Year on Year Inflation Rates for NIPA",  xy.labels = FALSE, plot.type = "single",
+     col = tsRainbow)
 ```
 
-`panic04()` returns a lot, but we will focus on the pooled tests and the test on the common components.
+While there appears to be occasional spikes, it does not appear that there are any long lasting shifts or trends.
+
+With this information it is now appropriate to start running our tests. We upload the NIPA account data and assume there can be at most one hundred factors. The maximum lags are set to seven and the BIC(3) criteria is used to evaluate the number of true factors. 
+
+```{r, results='asis'}
+agg1_04 <- panic04(NIPA_agg_9, nfac = 100,k1 = 7,criteria = "BIC3")
+```
+
+### Test on Common Components
 ```{r,echo=FALSE,results='asis'}
-output_1 <- summary(agg1.04)
+output_1 <- summary(agg1_04)
 knitr::kable(output_1$common_tests)
+```
+
+The tests on the common component have a critical value of -2.86 at the 5\% significance level. The tests clearly reject the idea of pervasive non-convergence and so it can be concluded that the common components of the series converge.
+
+### Pooled Tests
+```{r,echo=FALSE,results='asis'}
 knitr::kable(output_1$pooled_tests)
 ```
 
+The tests on the idiosyncratic component have a critical value of -1.96 at the 5\% significance level while the demeaned test is the same as the common components above. The tests on the idiosyncratic component strongly reject that the null hypothesis of non-convergence and so the series are found to not have unit roots. The demeaned test is the test on the raw data. As we can see, without panic we would not reject the null hypothesis of nonstationarity. 
+
+Now we will run the PANIC (2010) tests, first with the demeaned and then non-demeaned data.
 
 ```{r}
-#agg1.10.d <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = TRUE)
+agg1_10_d <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = TRUE)
 ```
 
+Below is the output for the pooled tests, MP test C, and PMSB test on the demeaned data.
+
+### Pooled Tests
 ```{r,echo=FALSE,results='asis'}
-#output_10_d <- summary(agg1.10.d)
-#knitr::kable(output_10_d$pool_test)
-#knitr::kable(output_10_d$mp_test_c)
-#knitr::kable(output_10_d$pmsb_test)
+output_10_d <- summary(agg1_10_d)
+knitr::kable(output_10_d$pool_test)
 ```
 
+### MP Test Model C
+```{r,echo=FALSE,results='asis'}
+knitr::kable(output_10_d$mp_test_c)
+```
+
+### PMSB Test
+```{r,echo=FALSE,results='asis'}
+knitr::kable(output_10_d$pmsb_test)
+```
+
+For all of the above tests we reject the null of non-convergence, however notice how much higher the P and Model C tests are as compared to PMSB.  This may be due to the P and Model C tests being too powerful due to the large number of series we have. It would be wise to do an analysis and look at the power of each of our test statistics to make sure our tests are not overpowered. It is best to use the most conservative estimate and so we will favor the results from the PMSB test, which still reject the idea of non-convergence in the idiosyncratic component.
+
+
+Below we run Model A and B, as well and the PMSB test with the non-demeaned data.
 ```{r}
-#agg1.10.nd <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = FALSE)
+agg1_10_nd <- panic10(NIPA_agg_9,nfac = 100, k1 = 7,criteria = "BIC3",demean = FALSE)
 ```
 
+### MP Test Model A
 ```{r,echo=FALSE,results='asis'}
-#output_10_nd <- summary(agg1.10.nd)
-#knitr::kable(output_10_nd$mp_test_a)
-#knitr::kable(output_10_nd$mp_test_b)
-#knitr::kable(output_10_nd$pmsb_test)
+output_10_nd <- summary(agg1_10_nd)
+knitr::kable(output_10_nd$mp_test_a)
 ```
 
+### MP Test Model B
+```{r,echo=FALSE,results='asis'}
+knitr::kable(output_10_nd$mp_test_b)
+```
+
+### PMSB Test
+```{r,echo=FALSE,results='asis'}
+knitr::kable(output_10_nd$pmsb_test)
+```
+
+Again each test strongly rejects the null hypothesis of non-convergence and model $A$ and $B$ seem to be too powerful like in model $C$. Favoring PMSB we still reject the null hypothesis of non-convergence. This analysis concludes that the most disaggregate series in the National Income and Product Accounts do not have a unit root which is consistent with standard economic theory.
 

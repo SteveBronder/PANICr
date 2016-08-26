@@ -5,7 +5,7 @@
 #'
 #'@usage nw(v,fixk)
 #'
-#'@param v A Vector of error terms from a factor model
+#'@param v A cector of error terms from a factor model
 #'
 #'@param fixk If fixk is 0, then this function will perform automatic bandwidth
 #' selection. Otherwise, the integer placed here will be the selected bandwidth.

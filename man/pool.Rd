@@ -7,14 +7,14 @@
 pool(p_values,test_values)
 }
 \arguments{
-\item{p_values}{p_values supplied matrix containing p values}
+\item{p_values}{a data frame containing the p values}
 
-\item{test_values}{The adf test to be pooled}
+\item{test_values}{a matrix of adf test values to be pooled}
 }
 \value{
-adf31a x P-value for the pooled test
+adf31a a numeric vector of the fisher sum of the p-values
 
-adf31b x P-value for the pooled test
+adf31b a numeric vector containing the critical value of the pooling test
 }
 \description{
 This function find the P values for the pooled test in PANIC (2010)

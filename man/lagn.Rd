@@ -7,12 +7,12 @@
 lagn(x,n)
 }
 \arguments{
-\item{x}{A 1XT vector to apply the lag to}
+\item{x}{A vector to apply the lag to}
 
-\item{n}{the number of lags to add to the vector}
+\item{n}{The number of lags to add to the vector}
 }
 \value{
-y A 1XT vector with a lag n added
+y A vector with a lag n added
 }
 \description{
 This function adds lags to a vector.

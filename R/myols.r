@@ -4,9 +4,9 @@
 #'
 #'@usage myols(x,y)
 #'
-#'@param x A NxT matrix of dependent variables.
+#'@param x A matrix of dependent variables.
 #'
-#'@param y A 1xT vector that is used as the independent variable.
+#'@param y A vector that is used as the independent variable.
 #'
 #'@export
 myols <- function(x, y) {

@@ -39,7 +39,7 @@ criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC
 
 func a character vector representing which function was run
 
-ic a double containing the number of components that were estimated
+ic a numeric vector containing the number of components that were estimated
 
 PMSB Unit root test tends to zero. The unit root hypothesis is rejected
 in favor of stationarity when the PMSB test goes below a critical value.

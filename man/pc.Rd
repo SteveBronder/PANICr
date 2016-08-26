@@ -7,17 +7,17 @@
 pc(y,nfac)
 }
 \arguments{
-\item{y}{A NxT matrix containing the data}
+\item{y}{An NxT matrix containing the data}
 
 \item{nfac}{An integer specifying the maximum number of factors allowed
 while estimating the factor model.}
 }
 \value{
-ehat The Idiosyncratic component of the factor model
+ehat A matrix with the Idiosyncratic component of the factor model
 
-fhat The approximate factors of the approximate factor model
+fhat A matrix with the factors of the approximate factor model
 
-lambda The factor loadings of the factor model
+lambda A matrix with the factor loadings of the approximate factor model
 }
 \description{
 This function performs the principle component analysis in order to determine

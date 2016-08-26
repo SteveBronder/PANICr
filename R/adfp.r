@@ -6,28 +6,26 @@
 #'
 #'@usage adfp(y, penalty, kmax, kmin, p)
 #'
-#'@param y matrix of data
+#'@param y A matrix of data
 #'
-#'@param penalty a binary selection of 0 or 1. 0 uses the MAIC, a penalty on
+#'@param penalty An integer value of either 0 or 1. 0 uses the MAIC, a penalty on
 #' k that accounts for the bias in the sum of the autoregressive coefficient.
 #'  1 uses the more general form MIC.
 #'
-#'@param kmax The maximum number of lags for the vector autoregressions. An
+#'@param kmax An integer of the maximum number of lags for the vector autoregressions. An
 #' upper bound of (12*(T/100)^.25)^8 is suggested
 #' in Schwert (1989)
 #'
-#'
-#'
-#'@param kmin The minimum number of lags for the vector autoregression. k = 0
+#'@param kmin An integer of the minimum number of lags for the vector autoregression. k = 0
 #' is a reasonable point.
 #'
-#'@param p a binary selection of 0 or -1. a value of -1 will modify the series
+#'@param p An integer with value of either 0 or -1. a value of -1 will modify the series
 #' with a generalized least squares regression.
 #'
-#'@return adf A vector of t tests for the dfgls of each column. Will have to
+#'@return adf A numeric vector of t tests for the dfgls of each column. Will have to
 #' find rejection levels
 #'
-#'@return kstar A vector of the lags for each column's vector autoregression.
+#'@return kstar A numeric vector of the lags for each column's vector autoregression.
 #'
 #'@export
 adfp <- function(y, penalty, kmax, kmin, p) {

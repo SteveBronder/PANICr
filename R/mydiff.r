@@ -5,11 +5,11 @@
 #'
 #'@usage mydiff(x,k)
 #'
-#'@param x The NxT matrix to be differenced.
+#'@param x The matrix to be differenced.
 #'
-#'@param k The length of difference to perform on each vector of the NxT matrix.
+#'@param k An integer of the length of difference to perform on each vector of the NxT matrix.
 #'
-#'@return xx A matrix that has been differenced by k periods ago.
+#'@return xx A matrix that has been differenced k times.
 #'
 #'@export
 

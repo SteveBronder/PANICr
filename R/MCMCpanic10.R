@@ -56,9 +56,10 @@
 #' 
 #'@param ... extra parameters to be passed to MCMCfactanal
 #'
-#'@return adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
-#' will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B, 
-#' PMSB, and rho. All tests are degenerative and have a critical value of -1.64. 
+#'@return mcmc_tests An mcmc object containing the resamples of the test statistics.
+#' When demeaned, the results will be for model P, PMSB, Model C, and rho1. 
+#' When not demeaned, the results will be for model A, model B, PMSB, rho1, and
+#' the pooled values on the idiosyncratic component of PANIC (2004).
 #'
 #'@references Bai, Jushan, and Serena Ng.
 #''Panel Unit Root Tests With Cross-Section Dependence: A Further Investigation.'
@@ -252,13 +253,13 @@ MCMCpanic10 <- function(x = NULL,
       c(t_a,t_b,t_a1,t_a2,t_c,rho1,adf30b)
     })
     
-    output <- do.call(rbind,output_list)
-    colnames(output) <- c("model_a_ta", "model_a_tb", "model_b_ta", "model_b_tb", "pmsb", "rho1","pool_adf")
+    mcmc_tests <- do.call(rbind,output_list)
+    colnames(mcmc_tests) <- c("model_a_ta", "model_a_tb", "model_b_ta", "model_b_tb", "pmsb", "rho1","pool_adf")
+    mcmc_tests <- coda::as.mcmc(mcmc_tests)
+
     
     
-    
-    
-    return(output)
+    return(mcmc_tests)
     ######################################################### 
   } else {
     
@@ -409,14 +410,14 @@ MCMCpanic10 <- function(x = NULL,
       c(t_a, t_b, t_c, t_a1, t_a2, rho1)
     })
     
-    output <- do.call(rbind,output_list)
+    mcmc_tests <- do.call(rbind,output_list)
     
-    colnames(output) <- c("Pa", "Pb","PMSB", "Model C ta", "Model C tb",  "rho1")
+    colnames(mcmc_tests) <- c("Pa", "Pb","PMSB", "Model C ta", "Model C tb",  "rho1")
     
-    output <- coda::as.mcmc(output)
+    mcmc_tests <- coda::as.mcmc(mcmc_tests)
     
     
-    return(output)
+    return(mcmc_tests)
     
   }
 } 

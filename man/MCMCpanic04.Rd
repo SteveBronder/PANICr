@@ -4,28 +4,29 @@
 \alias{MCMCpanic04}
 \title{PANIC (2004) MCMC Non-Stationarity Tests on Common and Idiosyncratic Components}
 \usage{
-MCMCpanic04(x, nfac, k1, jj,burn = 1000, mcmc = 10000, thin = 10, verbose = 0,
-seed = NA, lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
+MCMCpanic04(x, nfac, k1, criteria = NULL,burn = 1000,
+mcmc = 10000, thin = 10, verbose = 0, seed = NA,
+lambda.start = NA, psi.start = NA, l0 = 0, L0 = 0, 
 a0 = 0.001, b0 = 0.001, std.var = TRUE,...)
 }
 \arguments{
-\item{x}{A NxT matrix containing the data}
+\item{x}{An object of class xts with each column being a time series}
 
 \item{nfac}{An integer specifying the maximum number of factors allowed
 while estimating the factor model.}
 
-\item{k1}{The maximum lag allowed in the ADF test.}
+\item{k1}{an integer that is the maximum lag allowed in the ADF test.}
 
-\item{jj}{an Integer 1 through 8. Choices 1 through 7 are respectively, IC(1),
-IC(2), IC(3), AIC(1), BIC(1), AIC(3), and BIC(3), respectively. Choosing 8
-makes the number of factors equal to the number of columns whose sum of
+\item{criteria}{a character vector of length one with a value of either
+IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen. Choosing eigen makes
+the number of factors equal to the number of columns whose sum of
 eigenvalues is less than  or equal to .5.}
 
-\item{burn}{The number of burn in iterators for the sampler}
+\item{burn}{Integer of the number of burn in iterators for the sampler}
 
-\item{mcmc}{The number of iterations in the sampler}
+\item{mcmc}{Integer of the number of iterations in the sampler}
 
-\item{thin}{The thinning interval used in the simulation. mcmc must be divisible by this value.}
+\item{thin}{Integer of the thinning interval used in the simulation. mcmc must be divisible by this value.}
 
 \item{verbose}{A positive integer which determines whether or not the progress of the
 sampler is printed to the screen. If verbose is greater than 0 the iteration 
@@ -53,27 +54,21 @@ Otherwise, the variables are rescaled to have zero mean, but retain their observ
 \item{...}{extra parameters to pass to MCMCfactanal}
 }
 \value{
-adf.mcmc A list of the MCMC samples of the test statistics. Returns the test statistics
- Pooled Cointegration a,  Pooled Cointegration b, Pooled Idiosyncratic a, 
- Pooled Idiosyncratic b, Pooled Demeaned test, and tests on Common components. The critical values for the Pooled Cointegration test
- can be found on this packages vignette or in Bai and Ng (2004). The pooled idiosyncratic test has a critical
- value of 1.64. The Pooled Demeaned test has a critical value of 2.87. The common components have a critical
- value of -2.86.
+mcmc_tests An mcmc object containing the resampled tests on the common components as well as
+the test on the idiosyncratic component.
 
-factor_mcmc The MCMC results from MCMCfactanal()
+factor_mcmc The results from MCMCfactanal()
 }
 \description{
-This function performs an MCMC over PANIC (2010) Model C, PAC, and
-PMSB tests. PAC estimates the pooled autoregressive coefficient, PMSB uses a sample
-moment, and Model C performs the MP test while projecting on intercept and trend.
- The sample moments test is based off of the modified Sargan-Bhargava test (PMSB).
+This function performs an MCMC over the 
+tests on the idiosyncratic and common component from PANIC (2004).
 }
 \references{
 Bai, Jushan, and Serena Ng. 
 'A PANIC Attack on Unit Roots and Cointegration.'
 Econometrica 72.4 (2004): 1127-1177. Print.
 
-ndrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
+Andrew D. Martin, Kevin M. Quinn, Jong Hee Park (2011). MCMCpack: Markov Chain Monte Carlo
 in R. Journal of Statistical Software. 42(9): 1-21. URL http://www.jstatsoft.org/v42/i09/.
 }
 

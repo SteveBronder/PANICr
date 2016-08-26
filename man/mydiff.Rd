@@ -7,12 +7,12 @@
 mydiff(x,k)
 }
 \arguments{
-\item{x}{The NxT matrix to be differenced.}
+\item{x}{The matrix to be differenced.}
 
-\item{k}{The length of difference to perform on each vector of the NxT matrix.}
+\item{k}{An integer of the length of difference to perform on each vector of the NxT matrix.}
 }
 \value{
-xx A matrix that has been differenced by k periods ago.
+xx A matrix that has been differenced k times.
 }
 \description{
 This function differences an entire matrix by some defined

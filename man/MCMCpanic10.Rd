@@ -55,9 +55,10 @@ Otherwise, the variables are rescaled to have zero mean, but retain their observ
 \item{...}{extra parameters to be passed to MCMCfactanal}
 }
 \value{
-adf.mcmc A list of the MCMC samples of the test statistics. If demeaned is set to TRUE, adf.mcmc
-will have the tests Pa, Pb, Model C, PMSB, and rho1. If FALSE, adf.mcmc will have Model A, Model B, 
-PMSB, and rho. All tests are degenerative and have a critical value of -1.64.
+mcmc_tests An mcmc object containing the resamples of the test statistics.
+When demeaned, the results will be for model P, PMSB, Model C, and rho1. 
+When not demeaned, the results will be for model A, model B, PMSB, rho1, and
+the pooled values on the idiosyncratic component of PANIC (2004).
 }
 \description{
 This function performs the tests of PANIC (2010) with a Monte Carlo

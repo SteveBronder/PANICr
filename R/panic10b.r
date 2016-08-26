@@ -48,7 +48,7 @@
 #'
 #'@return func a character vector representing which function was run
 #'
-#'@return ic a double containing the number of components that were estimated
+#'@return ic a numeric vector containing the number of components that were estimated
 #'
 #'
 #'@return PMSB Unit root test tends to zero. The unit root hypothesis is rejected

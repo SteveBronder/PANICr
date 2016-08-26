@@ -4,11 +4,11 @@
 #'
 #'@usage lagn(x,n)
 #'
-#'@param x A 1XT vector to apply the lag to
+#'@param x A vector to apply the lag to
 #'
-#'@param n the number of lags to add to the vector
+#'@param n The number of lags to add to the vector
 #'
-#'@return y A 1XT vector with a lag n added
+#'@return y A vector with a lag n added
 #'
 #'
 #'@export

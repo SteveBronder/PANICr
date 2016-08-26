@@ -4,16 +4,17 @@
 #'
 #'@usage poolcoint(a,x,r)
 #'
-#'@param a A supplied matrix containg the containing p values
+#'@param a A matrix containg the p values
 #'
-#'@param x The adf test to be pooled
+#'@param x A matrix containing the adf test to be pooled
 #'
-#'@param r The number of factors determined by getnfac()
+#'@param r An integer for the number of factors determined by getnfac()
 #'
-#'@return pvala a P-value for the pooled cointegration test
+#'@return pvala a numeric vector of the fisher sum of the p-values for the cointegration test
 #'
-#'@return pvalb a P-value for the pooled cointegration test
+#'@return pvalb a numeric vector containing the critical value of the cointegration test
 #'
+#'@export
 poolcoint <- function(a, x, r) {
     
     x <- as.matrix(x)

@@ -1,4 +1,4 @@
-#'@title Create an Index of lowest values of each column for a matrix
+#'@title Create an Index of lowest values of each column 
 #'
 #'@description This function creates a vector filled with the row position
 #'of the lowest value within each column of a matrix.
@@ -7,7 +7,7 @@
 #'
 #'@param x A matrix that will be be used to create the index of lowest values.
 #'
-#'@return pos A vector containig an index of the row position of the lowest
+#'@return pos A vector containing an index of the row position of the lowest
 #' value within each column of a matrix.
 #'
 #'@export

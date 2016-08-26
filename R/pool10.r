@@ -5,13 +5,13 @@
 #'@usage pool(p_values,test_values)
 #'
 #'
-#'@param p_values p_values supplied matrix containing p values
+#'@param p_values a data frame containing the p values
 #'
-#'@param test_values The adf test to be pooled
+#'@param test_values a matrix of adf test values to be pooled
 #'
-#'@return adf31a x P-value for the pooled test
+#'@return adf31a a numeric vector of the fisher sum of the p-values
 #'
-#'@return adf31b x P-value for the pooled test
+#'@return adf31b a numeric vector containing the critical value of the pooling test
 #'
 #'@export
 

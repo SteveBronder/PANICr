@@ -1,51 +1,52 @@
 #'@title PANIC (2004) Non-Stationarity Tests on Common and Idiosyncratic Components
 #'
-#'@description This function performs the pooled tests on the idiosyncratic and common component from PANIC (2004).
+#'@description Performs the tests on the idiosyncratic and common component from PANIC (2004).
 #'
 #'
 #'@usage panic04(x, nfac, k1, criteria)
 #'
 #'
-#'@param x An object of class xts holding the time series data
+#'@param x An object of class xts with each column being a time series
 #'
 #'@param nfac An integer speciyfing the maximum number of factors allowed
 #' while estimating the factor model.
 #'
-#'@param k1 an Integer that is the maximum lag allowed in the ADF test.
+#'@param k1 an integer that is the maximum lag allowed in the ADF test.
 #' 
-#'@param criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#'@param criteria a character vector of length one with a value of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 #'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
+#'  
 #'
-#'@return pool_adf A data frame containing pooled demeaned critical values, demeaned error term critical values ,demeaned
-#'  and detrended critical values ,R squared for principle component
-#'  , and the significance of the error components.
-#'
-#'@return adf.ind A data frame containing the critical values for the pooled Demeaned ADF test, the
-#' pooled ADF test on the common components, the pooled demeaned ADF test on the
-#' Idiosyncratic component, and the pooled first differenced and demeaned ADF test on the
-#' Idiosyncratic component.
+#'@return pooladf A data frame containing the pooled tests for the demeaned data,
+#' idiosyncratic component, and the cointegration test. The first row is Fisher's method applied to
+#' the p values of the respective test. The second row is the correction from PANIC (2004) applied to
+#' the first row.
 #' 
-#' @return adff A matrix containing summary information for the tests made on each series.
 #' 
 #'@return Common A data frame of the test results on the common component
 #'
-#'@return nfac An integer speciyfing the maximum number of factors allowed
+#'@return adff A data frame containing pooled demeaned critical values,
+#' demeaned error term critical values, demeaned
+#' and detrended critical values, R squared for principle component,
+#' and the significance of the error components.
+#'
+#'@return nfac An integer specifying the maximum number of factors allowed
 #' while estimating the factor model.
 #'
-#'@return k1 an integer that is the maximum lag allowed in the ADF test.
+#'@return k1 An integer that is the maximum lag allowed in the ADF test.
 #' 
-#'@return criteria a character vector with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
+#'@return criteria A character vector with a value of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
 #'  Choosing eigen makes the number of factors equal to the number of columns whose sum of eigenvalues is less than  or equal to .5.
 #'
-#'@return func a character vector representing which function was run
+#'@return func A character vector representing which function was run
 #'
-#'@return ic a double containing the number of components that were estimated
+#'@return ic A numeric vector containing the number of components that were estimated
 #'
 #'@references Bai, Jushan, and Serena Ng. 
 #''A PANIC Attack on Unit Roots and Cointegration.'
 #' Econometrica 72.4 (2004): 1127-1177. Print.
 #' 
-#' @export
+#'@export
 #'
 panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
   ###  

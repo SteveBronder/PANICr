@@ -6,16 +6,16 @@
 #'@usage pc(y,nfac)
 #'
 #'
-#'@param y A NxT matrix containing the data
+#'@param y An NxT matrix containing the data
 #'
 #'@param nfac An integer specifying the maximum number of factors allowed
 #' while estimating the factor model.
 #'
-#'@return ehat The Idiosyncratic component of the factor model
+#'@return ehat A matrix with the Idiosyncratic component of the factor model
 #'
-#'@return fhat The approximate factors of the approximate factor model
+#'@return fhat A matrix with the factors of the approximate factor model
 #'
-#'@return lambda The factor loadings of the factor model
+#'@return lambda A matrix with the factor loadings of the approximate factor model
 pc <- function(y, nfac) {
   
   bigt <- dim(y)[1]

@@ -27,6 +27,8 @@ summary.panic <- function(object,...){
     summary_results <- list(common_tests = common_ans,
                             pooled_tests = pooled_ans,
                             func = object$func,
+                            nfac = object$nfac,
+                            ic = object$ic,
                             criteria = object$criteria)
     
     summary_panic <- structure(summary_results,

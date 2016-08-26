@@ -7,27 +7,27 @@
 adfp(y, penalty, kmax, kmin, p)
 }
 \arguments{
-\item{y}{matrix of data}
+\item{y}{A matrix of data}
 
-\item{penalty}{a binary selection of 0 or 1. 0 uses the MAIC, a penalty on
+\item{penalty}{An integer value of either 0 or 1. 0 uses the MAIC, a penalty on
 k that accounts for the bias in the sum of the autoregressive coefficient.
  1 uses the more general form MIC.}
 
-\item{kmax}{The maximum number of lags for the vector autoregressions. An
+\item{kmax}{An integer of the maximum number of lags for the vector autoregressions. An
 upper bound of (12*(T/100)^.25)^8 is suggested
 in Schwert (1989)}
 
-\item{kmin}{The minimum number of lags for the vector autoregression. k = 0
+\item{kmin}{An integer of the minimum number of lags for the vector autoregression. k = 0
 is a reasonable point.}
 
-\item{p}{a binary selection of 0 or -1. a value of -1 will modify the series
+\item{p}{An integer with value of either 0 or -1. a value of -1 will modify the series
 with a generalized least squares regression.}
 }
 \value{
-adf A vector of t tests for the dfgls of each column. Will have to
+adf A numeric vector of t tests for the dfgls of each column. Will have to
 find rejection levels
 
-kstar A vector of the lags for each column's vector autoregression.
+kstar A numeric vector of the lags for each column's vector autoregression.
 }
 \description{
 This function performs a modified Dickey-Fuller t test for a

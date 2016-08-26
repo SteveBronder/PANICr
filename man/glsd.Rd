@@ -7,13 +7,13 @@
 glsd(y,p)
 }
 \arguments{
-\item{y}{The dataframe to be detreneded}
+\item{y}{A matrix containing the data to be detrended}
 
-\item{p}{an binary input of 0 or 1 which decides value of penalty chat of either -7
-or -13.5, respectively}
+\item{p}{An integer with value of either 0 or 1 which decides the value of the penalty term, chat.
+This is either either -7 or -13.5, respectively}
 }
 \value{
-yt The data detrended
+yt A matrix of the detrended data
 }
 \description{
 This function detrends the data by general least squares.

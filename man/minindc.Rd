@@ -2,7 +2,7 @@
 % Please edit documentation in R/minindc.r
 \name{minindc}
 \alias{minindc}
-\title{Create an Index of lowest values of each column for a matrix}
+\title{Create an Index of lowest values of each column}
 \usage{
 minindc(x)
 }
@@ -10,7 +10,7 @@ minindc(x)
 \item{x}{A matrix that will be be used to create the index of lowest values.}
 }
 \value{
-pos A vector containig an index of the row position of the lowest
+pos A vector containing an index of the row position of the lowest
 value within each column of a matrix.
 }
 \description{
