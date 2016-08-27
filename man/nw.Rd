@@ -7,7 +7,7 @@
 nw(v,fixk)
 }
 \arguments{
-\item{v}{A Vector of error terms from a factor model}
+\item{v}{A cector of error terms from a factor model}
 
 \item{fixk}{If fixk is 0, then this function will perform automatic bandwidth
 selection. Otherwise, the integer placed here will be the selected bandwidth.}

@@ -7,9 +7,9 @@
 myols(x,y)
 }
 \arguments{
-\item{x}{A NxT matrix of dependent variables.}
+\item{x}{A matrix of dependent variables.}
 
-\item{y}{A 1xT vector that is used as the independent variable.}
+\item{y}{A vector that is used as the independent variable.}
 }
 \description{
 Returns the Beta values for an Ordinary Least Squares.
