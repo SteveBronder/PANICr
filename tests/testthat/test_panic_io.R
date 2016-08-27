@@ -11,7 +11,9 @@ test_that("Panic 04 consistency", {
   expect_equal(panic04(test1,
                        nfac = 10L,
                        k1 = 7,
-                       criteria = "IC1"), test_04)
+                       criteria = "IC1"),
+               test_04,
+               tolerance = .0001)
 })
 
 test_that("Panic 10 demeaned consistency", {
@@ -24,7 +26,9 @@ test_that("Panic 10 demeaned consistency", {
                        nfac = 10L,
                        k1 = 7,
                        criteria = "IC1",
-                       demean = TRUE), test_10_dm)
+                       demean = TRUE),
+               test_10_dm,
+               tolerance = .0001)
 })
 
 test_that("Panic 10 non-demeaned consistency", {
@@ -37,5 +41,7 @@ test_that("Panic 10 non-demeaned consistency", {
                        nfac = 10L,
                        k1 = 7,
                        criteria = "IC1",
-                       demean = FALSE), test_10_ndm)
+                       demean = FALSE),
+               test_10_ndm,
+               tolerance = .0001)
 })
