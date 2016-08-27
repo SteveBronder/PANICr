@@ -3,13 +3,16 @@ Title: PANIC Tests of Nonstationarity
 Description: A methodology that makes use of the factor structure of large
     dimensional panels to understand the nature of nonstationarity inherent
     in data. This is referred to as PANIC, Panel Analysis of Nonstationarity
-    in Idiosyncratic and Common Components. PANIC (2004) includes valid
-    pooling methods that allow panel tests to be constructed. PANIC (2004)
-    can detect whether the nonstationarity in a series is pervasive,
-    or variable specific, or both. PANIC (2010) includes two new tests
-    on the idiosyncratic component that estimates the pooled autoregressive
-    coefficient and sample moment, respectively. The PANIC model approximates
-    the number of factors based on Bai and Ng (2002).
+    in Idiosyncratic and Common Components. 
+    PANIC (2004)<10.1111/j.1468-0262.2004.00528.x> includes
+    valid pooling methods that allow panel tests to be constructed.
+    PANIC (2004) can detect whether the nonstationarity in a series is
+    pervasive, or variable specific, or both.
+    PANIC (2010) <10.1017/s0266466609990478> includes
+    two new tests on the idiosyncratic component that estimates the pooled
+    autoregressive coefficient and sample moment, respectively. The PANIC
+    model approximates the number of factors based on
+    Bai and Ng (2002) <10.1111/1468-0262.00273>.
 Depends:
     R(>= 2.10.0)
 Version: 0.1.3
@@ -18,9 +21,7 @@ LazyData: no
 Author: Steve Bronder <sbronder@stevebronder.com>
 Maintainer: Steve Bronder <sbronder@stevebronder.com>
 URL: stevebronder.com,
-     http://www.columbia.edu/~sn2294/pub/ecta04.pdf,
-     http://www.columbia.edu/~jb3064/papers/2010_Panel_unit_root_tests_with_cross_section_dependence-a_further_investigation.pdf,
-     http://www.econ.nyu.edu/user/baij/econometrica02.pdf
+     https://github.com/Stevo15025/PANICr
 Suggests:
     knitr,
     testthat
