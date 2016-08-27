@@ -4,7 +4,7 @@
 #'
 #'@usage poolcoint(a,x,r)
 #'
-#'@param a A matrix containg the p values
+#'@param a A matrix containing the p values
 #'
 #'@param x A matrix containing the adf test to be pooled
 #'

@@ -7,7 +7,7 @@
 poolcoint(a,x,r)
 }
 \arguments{
-\item{a}{A matrix containg the p values}
+\item{a}{A matrix containing the p values}
 
 \item{x}{A matrix containing the adf test to be pooled}
 

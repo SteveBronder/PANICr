@@ -13,7 +13,7 @@ adf04(y,k,p)
 ADF regressions. Bai and Ng (2004) suggest 4*(Time/100)^(.25) rounded
 to the nearest whole number as the maximum number of lags.}
 
-\item{p}{An integer of value either 0 or 1. p is the order of the determinisitic
+\item{p}{An integer of value either 0 or 1. p is the order of the deterministic
 function in the regression. 0 is for constant only and 1 is to include a trend.}
 }
 \value{
