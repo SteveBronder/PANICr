@@ -70,7 +70,7 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
   # BEGIN: TESTS
   #######
   all(sapply(x, is.numeric) == TRUE)  || stop("All columns must be numeric")
-  is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
+  xts::is.xts(x) || stop("x must be an xts object so lags and differences are taken properly")
   if (is.null(nfac)){
     warning("nfac is NULL, setting the maximum number of factors equal to the number of columns")
     nfac <- dim(x)[2]
@@ -129,7 +129,7 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
       
         # take cumsum, lags of cumsum, and remove NA of error from PC
         ehat0 <- cumsum(dehat)
-        lagehat0 <- lag(ehat0,1)[2:nrow(ehat0),]
+        lagehat0 <- xts::lag.xts(ehat0,1)[2:nrow(ehat0),]
         trim_ehat0 <- ehat0[2:nrow(ehat0),]
         
         # Do old panic
@@ -258,7 +258,7 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
         
         # take cumsum, lags of cumsum, and remove NA of error from PC
         ehat0 <- cumsum(dehat)
-        lagehat0 <- lag(ehat0,1)[2:nrow(ehat0),]
+        lagehat0 <- xts::lag.xts(ehat0,1)[2:nrow(ehat0),]
         trim_ehat0 <- ehat0[2:nrow(ehat0),]
       
         

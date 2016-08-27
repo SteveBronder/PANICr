@@ -150,8 +150,8 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
         
         fit1[, i] <- fhat0 %*% PC$lambda[i, ]
         fit2[, i] <- PC$fhat %*% PC$lambda[i, ]
-        R21[i, ] <- sd(dehat[, i])^2/sd(x_diff[, i])^2
-        R22[i, ] <- sd(fit1[, i])/sd(ehat0[, i])
+        R21[i, ] <- stats::sd(dehat[, i])^2/stats::sd(x_diff[, i])^2
+        R22[i, ] <- stats::sd(fit1[, i])/stats::sd(ehat0[, i])
     }
     
     

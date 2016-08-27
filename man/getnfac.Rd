@@ -9,7 +9,7 @@ getnfac(x,kmax,criteria)
 \arguments{
 \item{x}{A matrix containing the data.}
 
-\item{kmax}{An integer with the maximum number of common factors to search over. This methedology
+\item{kmax}{An integer with the maximum number of common factors to search over. This methodology
 is weak to underestimation of the number of common factors so setting this value higher is preferred.}
 
 \item{criteria}{a character vector of length one with values of either IC1, IC2, IC3, AIC1, BIC1, AIC3, BIC3, or eigen.
