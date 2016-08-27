@@ -17,7 +17,10 @@ License: GPL-3
 LazyData: no
 Author: Steve Bronder <sbronder@stevebronder.com>
 Maintainer: Steve Bronder <sbronder@stevebronder.com>
-URL: stevebronder.com
+URL: stevebronder.com,
+     http://www.columbia.edu/~sn2294/pub/ecta04.pdf,
+     http://www.columbia.edu/~jb3064/papers/2010_Panel_unit_root_tests_with_cross_section_dependence-a_further_investigation.pdf,
+     http://www.econ.nyu.edu/user/baij/econometrica02.pdf
 Suggests:
     knitr,
     testthat
