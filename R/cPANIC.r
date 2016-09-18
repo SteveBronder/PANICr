@@ -82,7 +82,7 @@ panic04 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL) {
     # center, trim, and difference x
     x_dm <- scale(x,center = TRUE,scale = FALSE)
     x_trim <- x_dm[2:Tn, ]
-    x_diff <- diff(x, 1)[2:Tn,]
+    x_diff <- diff(x_dm, 1)[2:Tn,]
 
     # Value for scaling?
     scaler <- sqrt(N) * Tn

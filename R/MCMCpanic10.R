@@ -120,10 +120,12 @@ MCMCpanic10 <- function(x = NULL,
   
   
   if (demean == FALSE) {
-    x_diff <- diff(x, 1)[2:nrow(x),]
     
+
+    x_diff <- diff(x, 1)[2:nrow(x),]
     Tn <- dim(x_diff)[1]
     N <- dim(x_diff)[2]
+
     
     # test nfac < N
     nfac < N || stop(" nfac must be less than the number of series.")
@@ -219,7 +221,7 @@ MCMCpanic10 <- function(x = NULL,
       t_c <- sqrt(N) *  t_c /sqrt(V1 * PHI4)
       
       # Model B tests that project on constant
-      
+      # FIXME: Should this be Tn - one or two
       one <- matrix(1, I(Tn - 1), 1)
       Q_T <- diag(I(Tn - 1)) - one %*% solve(crossprod(one)) %*% t(one)
       ehat <- Q_T %*% trim_ehat0
@@ -263,6 +265,7 @@ MCMCpanic10 <- function(x = NULL,
     ######################################################### 
   } else {
     
+
     
     # difference and demean
     x_diff <- diff(x, 1)[2:nrow(x),]
