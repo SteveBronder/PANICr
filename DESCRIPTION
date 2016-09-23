@@ -15,7 +15,7 @@ Description: A methodology that makes use of the factor structure of large
     Bai and Ng (2002) <doi:10.1111/1468-0262.00273>.
 Depends:
     R(>= 2.10.0)
-Version: 0.1.3
+Version: 1.0.0
 License: GPL-3
 LazyData: no
 Author: Steve Bronder <sbronder@stevebronder.com>
