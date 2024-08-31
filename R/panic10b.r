@@ -209,7 +209,7 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
     t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
     
     # results
-    test_A_B <- data.frame( mp_test = c("ta","tb"),
+    test_A_B <- data.frame( mp_test = as.factor(c("ta","tb")),
                             model_a = c(t_a, t_b),
                             model_b = c(t_a1,t_a2))
     
@@ -347,9 +347,10 @@ panic10 <- function(x, nfac = NULL, k1 = NULL, criteria = NULL, demean = NULL) {
     t_a2 <- scaler * (rho1 - 1) * sqrt(bottom/(scaler^2)) * sqrt(B1 * OMEGA2/PHI4)
     
     # results
-    test.C.P <- data.frame(pool_test = c("Pa","Pb"),
+    test.C.P <- data.frame(pool_test = as.factor(c("Pa","Pb")),
                            P = c(t_a,t_b),
-                           mp_test = c("ta","tb"),model_c =c(t_a1, t_a2))
+                           mp_test = as.factor(c("ta","tb")),
+                           model_c =c(t_a1, t_a2))
     
     extra.test <- data.frame(PMSB = t_c,
                              rho1 = rho1,
